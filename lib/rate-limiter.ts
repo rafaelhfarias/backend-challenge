@@ -16,8 +16,6 @@ class RateLimiter {
   }
 
   private getClientId(request: Request): string {
-    // Use IP address as client identifier
-    // In production, you might want to use a more sophisticated method
     const forwarded = request.headers.get('x-forwarded-for')
     const realIp = request.headers.get('x-real-ip')
     const ip = forwarded?.split(',')[0] || realIp || 'unknown'
@@ -54,7 +52,6 @@ class RateLimiter {
     const client = this.store[clientId]
     
     if (now > client.resetTime) {
-      // Reset window
       client.count = 1
       client.resetTime = now + this.windowMs
       return {
@@ -81,6 +78,5 @@ class RateLimiter {
   }
 }
 
-// Create rate limiter instances for different endpoints
-export const apiRateLimiter = new RateLimiter(15 * 60 * 1000, 100) // 100 requests per 15 minutes
-export const searchRateLimiter = new RateLimiter(5 * 60 * 1000, 30) // 30 requests per 5 minutes for search
+export const apiRateLimiter = new RateLimiter(15 * 60 * 1000, 100)
+export const searchRateLimiter = new RateLimiter(5 * 60 * 1000, 30)

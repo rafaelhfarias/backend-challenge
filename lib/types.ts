@@ -1,11 +1,8 @@
 import { z } from 'zod'
 
-// Filter schemas
 export const AthleteFiltersSchema = z.object({
-  // Text search
   search: z.string().optional(),
   
-  // Categorical filters
   gender: z.enum(['Male', 'Female']).optional(),
   grade: z.string().optional(),
   isAlumni: z.boolean().optional(),
@@ -14,7 +11,6 @@ export const AthleteFiltersSchema = z.object({
   school: z.number().optional(),
   conference: z.string().optional(),
   
-  // Performance ranges
   scoreMin: z.number().optional(),
   scoreMax: z.number().optional(),
   totalFollowersMin: z.number().optional(),
@@ -22,7 +18,6 @@ export const AthleteFiltersSchema = z.object({
   engagementRateMin: z.number().optional(),
   engagementRateMax: z.number().optional(),
   
-  // Demographics
   ethnicityHispanicMin: z.number().optional(),
   ethnicityHispanicMax: z.number().optional(),
   ethnicityWhiteMin: z.number().optional(),
@@ -36,28 +31,23 @@ export const AthleteFiltersSchema = z.object({
   audienceGenderFemaleMin: z.number().optional(),
   audienceGenderFemaleMax: z.number().optional(),
   
-  // Platform filters
   instagramFollowersMin: z.number().optional(),
   instagramFollowersMax: z.number().optional(),
   tiktokFollowersMin: z.number().optional(),
   tiktokFollowersMax: z.number().optional(),
   
-  // Advanced Features - Date Ranges
   createdAfter: z.string().optional(),
   createdBefore: z.string().optional(),
   updatedAfter: z.string().optional(),
   updatedBefore: z.string().optional(),
   
-  // Advanced Features - Content Categories
   categoryIds: z.array(z.number()).optional(),
   categoryConfidenceMin: z.number().optional(),
   categoryConfidenceMax: z.number().optional(),
   
-  // Advanced Features - Multi-Platform
   hasBothPlatforms: z.boolean().optional(),
   platformType: z.enum(['instagram', 'tiktok', 'both']).optional(),
   
-  // Advanced Features - Complex Demographics
   audienceAge13_17Min: z.number().optional(),
   audienceAge13_17Max: z.number().optional(),
   audienceAge18_24Min: z.number().optional(),
@@ -69,7 +59,6 @@ export const AthleteFiltersSchema = z.object({
   audienceAge45PlusMin: z.number().optional(),
   audienceAge45PlusMax: z.number().optional(),
   
-  // Advanced Features - Post Performance
   instagramAvgLikesMin: z.number().optional(),
   instagramAvgLikesMax: z.number().optional(),
   instagramAvgCommentsMin: z.number().optional(),
@@ -79,7 +68,6 @@ export const AthleteFiltersSchema = z.object({
   tiktokAvgCommentsMin: z.number().optional(),
   tiktokAvgCommentsMax: z.number().optional(),
   
-  // Advanced Features - Location
   locationUsMin: z.number().optional(),
   locationUsMax: z.number().optional(),
   locationMexicoMin: z.number().optional(),
@@ -87,7 +75,6 @@ export const AthleteFiltersSchema = z.object({
   locationCanadaMin: z.number().optional(),
   locationCanadaMax: z.number().optional(),
   
-  // Pagination
   page: z.number().min(1).default(1),
   pageSize: z.number().min(1).max(100).default(20),
   sortBy: z.string().optional(),
@@ -96,13 +83,11 @@ export const AthleteFiltersSchema = z.object({
 
 export type AthleteFilters = z.infer<typeof AthleteFiltersSchema>
 
-// Highlighted text interface
 export interface HighlightedText {
   text: string
   highlighted: boolean
 }
 
-// Response types
 export interface AthleteResponse {
   id: number
   name: string
@@ -186,7 +171,6 @@ export interface AthleteResponse {
     name: string
     confidenceScore: number
   }>
-  // Search highlighting (optional)
   highlightedName?: HighlightedText[]
   highlightedEmail?: HighlightedText[]
   highlightedSchool?: HighlightedText[]
@@ -206,7 +190,6 @@ export interface PaginatedResponse<T> {
 
 export interface AthletesResponse extends PaginatedResponse<AthleteResponse> {}
 
-// Filter options for UI
 export interface FilterOptions {
   schools: Array<{ id: number; label: string; conference: string }>
   sports: Array<{ id: number; label: string }>

@@ -48,10 +48,8 @@ export function SearchHighlight({
   const parts: HighlightedText[] = []
   let lastIndex = 0
 
-  // Find all occurrences of the search term
   let index = lowerText.indexOf(lowerSearchTerm)
   while (index !== -1) {
-    // Add text before the match
     if (index > lastIndex) {
       parts.push({
         text: text.substring(lastIndex, index),
@@ -59,7 +57,6 @@ export function SearchHighlight({
       })
     }
 
-    // Add the highlighted match
     parts.push({
       text: text.substring(index, index + searchTerm.length),
       highlighted: true
@@ -69,7 +66,6 @@ export function SearchHighlight({
     index = lowerText.indexOf(lowerSearchTerm, lastIndex)
   }
 
-  // Add remaining text
   if (lastIndex < text.length) {
     parts.push({
       text: text.substring(lastIndex),

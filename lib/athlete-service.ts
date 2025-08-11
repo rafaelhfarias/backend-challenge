@@ -42,19 +42,15 @@ export class AthleteService {
       instagramFollowersMax,
       tiktokFollowersMin,
       tiktokFollowersMax,
-      // Advanced Features - Date Ranges
       createdAfter,
       createdBefore,
       updatedAfter,
       updatedBefore,
-      // Advanced Features - Content Categories
       categoryIds,
       categoryConfidenceMin,
       categoryConfidenceMax,
-      // Advanced Features - Multi-Platform
       hasBothPlatforms,
       platformType,
-      // Advanced Features - Complex Demographics
       audienceAge13_17Min,
       audienceAge13_17Max,
       audienceAge18_24Min,
@@ -65,7 +61,6 @@ export class AthleteService {
       audienceAge35_44Max,
       audienceAge45PlusMin,
       audienceAge45PlusMax,
-      // Advanced Features - Post Performance
       instagramAvgLikesMin,
       instagramAvgLikesMax,
       instagramAvgCommentsMin,
@@ -74,7 +69,6 @@ export class AthleteService {
       tiktokAvgLikesMax,
       tiktokAvgCommentsMin,
       tiktokAvgCommentsMax,
-      // Advanced Features - Location
       locationUsMin,
       locationUsMax,
       locationMexicoMin,
@@ -87,12 +81,10 @@ export class AthleteService {
       sortOrder = 'desc',
     } = filters
 
-    // Build where conditions
     const where: any = {
       AND: [],
     }
 
-    // Text search - use database search for initial filtering
     if (search) {
       where.AND.push({
         OR: [
@@ -103,25 +95,21 @@ export class AthleteService {
       })
     }
 
-    // Categorical filters
     if (gender) where.AND.push({ gender })
     if (grade) where.AND.push({ grade })
     if (isAlumni !== undefined) where.AND.push({ isAlumni })
     if (isActive !== undefined) where.AND.push({ isActive })
 
-    // School and conference filters
     if (school) {
       where.AND.push({ schoolId: school })
     } else if (conference) {
       where.AND.push({ school: { conference } })
     }
 
-    // Sport filter
     if (sport) {
       where.AND.push({ sports: { some: { id: sport } } })
     }
 
-    // Performance ranges
     if (scoreMin !== undefined || scoreMax !== undefined) {
       const scoreFilter: any = {}
       if (scoreMin !== undefined) scoreFilter.gte = scoreMin
@@ -143,7 +131,6 @@ export class AthleteService {
       where.AND.push({ engagementRate: engagementFilter })
     }
 
-    // Demographics filters
     if (ethnicityHispanicMin !== undefined || ethnicityHispanicMax !== undefined) {
       const filter: any = {}
       if (ethnicityHispanicMin !== undefined) filter.gte = ethnicityHispanicMin
@@ -186,7 +173,6 @@ export class AthleteService {
       where.AND.push({ audienceGenderFemale: filter })
     }
 
-    // Platform filters
     if (instagramFollowersMin !== undefined || instagramFollowersMax !== undefined) {
       const filter: any = {}
       if (instagramFollowersMin !== undefined) filter.gte = instagramFollowersMin
@@ -201,7 +187,6 @@ export class AthleteService {
       where.AND.push({ tiktokFollowers: filter })
     }
 
-    // Advanced Features - Date Ranges
     if (createdAfter || createdBefore) {
       const dateFilter: any = {}
       if (createdAfter) dateFilter.gte = new Date(createdAfter)
@@ -216,7 +201,6 @@ export class AthleteService {
       where.AND.push({ updatedAt: dateFilter })
     }
 
-    // Advanced Features - Content Categories
     if (categoryIds && categoryIds.length > 0) {
       where.AND.push({
         categories: {
@@ -240,7 +224,6 @@ export class AthleteService {
       })
     }
 
-    // Advanced Features - Multi-Platform
     if (hasBothPlatforms) {
       where.AND.push({
         AND: [
@@ -275,7 +258,6 @@ export class AthleteService {
       }
     }
 
-    // Advanced Features - Complex Demographics
     if (audienceAge13_17Min !== undefined || audienceAge13_17Max !== undefined) {
       const filter: any = {}
       if (audienceAge13_17Min !== undefined) filter.gte = audienceAge13_17Min
@@ -311,7 +293,6 @@ export class AthleteService {
       where.AND.push({ audienceAge45Plus: filter })
     }
 
-    // Advanced Features - Post Performance
     if (instagramAvgLikesMin !== undefined || instagramAvgLikesMax !== undefined) {
       const filter: any = {}
       if (instagramAvgLikesMin !== undefined) filter.gte = instagramAvgLikesMin
@@ -340,7 +321,6 @@ export class AthleteService {
       where.AND.push({ tiktokAvgComments: filter })
     }
 
-    // Advanced Features - Location
     if (locationUsMin !== undefined || locationUsMax !== undefined) {
       const filter: any = {}
       if (locationUsMin !== undefined) filter.gte = locationUsMin

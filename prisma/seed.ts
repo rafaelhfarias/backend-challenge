@@ -5,23 +5,20 @@ import * as path from 'path'
 const prisma = new PrismaClient()
 
 async function main() {
-  console.log('🌱 Starting database seed...')
+  console.log('Starting database seed...')
 
-  // Clear existing data
   await prisma.athleteCategory.deleteMany()
   await prisma.athlete.deleteMany()
   await prisma.school.deleteMany()
   await prisma.sport.deleteMany()
   await prisma.category.deleteMany()
 
-  // Load JSON data
   const schoolsData = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'sample-data', 'schools.json'), 'utf-8'))
   const sportsData = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'sample-data', 'sports.json'), 'utf-8'))
   const categoriesData = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'sample-data', 'categories.json'), 'utf-8'))
   const athletesData = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'sample-data', 'athletes.json'), 'utf-8'))
 
-  // Seed schools
-  console.log('📚 Seeding schools...')
+  console.log('Seeding schools...')
   for (const school of schoolsData) {
     await prisma.school.create({
       data: {
@@ -34,8 +31,7 @@ async function main() {
     })
   }
 
-  // Seed sports
-  console.log('⚽ Seeding sports...')
+  console.log('Seeding sports...')
   for (const sport of sportsData) {
     await prisma.sport.create({
       data: {
@@ -46,8 +42,7 @@ async function main() {
     })
   }
 
-  // Seed categories
-  console.log('🏷️ Seeding categories...')
+  console.log('Seeding categories...')
   for (const category of categoriesData) {
     await prisma.category.create({
       data: {
@@ -57,8 +52,7 @@ async function main() {
     })
   }
 
-  // Seed athletes (first 100 for performance)
-  console.log('🏃‍♀️ Seeding athletes...')
+  console.log('Seeding athletes...')
   const athletesToSeed = athletesData.slice(0, 100)
   
   for (const athlete of athletesToSeed) {
@@ -75,14 +69,12 @@ async function main() {
       needsReview: athlete.needsReview,
       schoolId: athlete.school.id,
       
-      // Current Score
       score: athlete.currentScore.score,
       totalFollowers: athlete.currentScore.totalFollowers,
       engagementRate: athlete.currentScore.engagementRate,
       audienceQualityScore: athlete.currentScore.audienceQualityScore,
       contentPerformanceScore: athlete.currentScore.contentPerformanceScore,
       
-      // Platform data
       instagramUsername: athlete.platforms.instagram?.username,
       instagramUserId: athlete.platforms.instagram?.platformUserId,
       instagramFollowers: athlete.platforms.instagram?.followers,
@@ -101,7 +93,6 @@ async function main() {
       tiktokAvgLikes: athlete.platforms.tiktok?.avgLikes,
       tiktokAvgComments: athlete.platforms.tiktok?.avgComments,
       
-      // Demographics
       age: athlete.demographics.age,
       ageRange: athlete.demographics.ageRange,
       ethnicityHispanic: athlete.demographics.ethnicity.hispanic,
@@ -123,7 +114,6 @@ async function main() {
       audienceAge45Plus: athlete.demographics.audienceAge['45+'],
       interests: JSON.stringify(athlete.demographics.interests),
       
-      // Relationships
       sports: {
         connect: sportIds.map((id: number) => ({ id }))
       }
@@ -137,7 +127,6 @@ async function main() {
       }
     })
 
-    // Create athlete categories
     if (athlete.categories) {
       for (const category of athlete.categories) {
         await prisma.athleteCategory.create({
@@ -151,7 +140,7 @@ async function main() {
     }
   }
 
-  console.log('✅ Database seeded successfully!')
+  console.log('Database seeded successfully!')
 }
 
 main()

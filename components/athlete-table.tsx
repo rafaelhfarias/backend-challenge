@@ -147,7 +147,6 @@ const columns = [
     cell: (info) => {
       const age = info.getValue()
       
-      // Handle case where audienceAge data is not available
       if (!age || typeof age !== 'object') {
         return (
           <div className="text-center">
@@ -156,7 +155,6 @@ const columns = [
         )
       }
       
-      // Provide fallback values for missing data
       const age18_24 = age.age18_24 || 0
       const age25_34 = age.age25_34 || 0
       const age35_44 = age.age35_44 || 0

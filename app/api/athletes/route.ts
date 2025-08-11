@@ -25,12 +25,10 @@ async function parseQueryParams(request: NextRequest) {
   
   const queryParams: any = {}
   
-  // Text search
   if (searchParams.get('search')) {
     queryParams.search = searchParams.get('search')
   }
   
-  // Categorical filters
   if (searchParams.get('gender')) {
     queryParams.gender = searchParams.get('gender')
   }
@@ -53,7 +51,6 @@ async function parseQueryParams(request: NextRequest) {
     queryParams.conference = searchParams.get('conference')
   }
   
-  // Performance ranges
   if (searchParams.get('scoreMin')) {
     queryParams.scoreMin = parseFloat(searchParams.get('scoreMin')!)
   }
@@ -73,7 +70,6 @@ async function parseQueryParams(request: NextRequest) {
     queryParams.engagementRateMax = parseFloat(searchParams.get('engagementRateMax')!)
   }
   
-  // Demographics
   if (searchParams.get('ethnicityHispanicMin')) {
     queryParams.ethnicityHispanicMin = parseFloat(searchParams.get('ethnicityHispanicMin')!)
   }
@@ -111,7 +107,6 @@ async function parseQueryParams(request: NextRequest) {
     queryParams.audienceGenderFemaleMax = parseFloat(searchParams.get('audienceGenderFemaleMax')!)
   }
   
-  // Platform filters
   if (searchParams.get('instagramFollowersMin')) {
     queryParams.instagramFollowersMin = parseInt(searchParams.get('instagramFollowersMin')!)
   }
@@ -125,7 +120,6 @@ async function parseQueryParams(request: NextRequest) {
     queryParams.tiktokFollowersMax = parseInt(searchParams.get('tiktokFollowersMax')!)
   }
   
-  // Advanced Features - Date Ranges
   if (searchParams.get('createdAfter')) {
     queryParams.createdAfter = searchParams.get('createdAfter')
   }
@@ -139,7 +133,6 @@ async function parseQueryParams(request: NextRequest) {
     queryParams.updatedBefore = searchParams.get('updatedBefore')
   }
   
-  // Advanced Features - Content Categories
   if (searchParams.get('categoryIds')) {
     const categoryIdsStr = searchParams.get('categoryIds')!
     queryParams.categoryIds = categoryIdsStr.split(',').map(id => parseInt(id))
@@ -151,7 +144,6 @@ async function parseQueryParams(request: NextRequest) {
     queryParams.categoryConfidenceMax = parseFloat(searchParams.get('categoryConfidenceMax')!)
   }
   
-  // Advanced Features - Multi-Platform
   if (searchParams.get('hasBothPlatforms')) {
     queryParams.hasBothPlatforms = searchParams.get('hasBothPlatforms') === 'true'
   }
@@ -159,7 +151,6 @@ async function parseQueryParams(request: NextRequest) {
     queryParams.platformType = searchParams.get('platformType')
   }
   
-  // Advanced Features - Complex Demographics
   if (searchParams.get('audienceAge13_17Min')) {
     queryParams.audienceAge13_17Min = parseFloat(searchParams.get('audienceAge13_17Min')!)
   }
@@ -191,7 +182,6 @@ async function parseQueryParams(request: NextRequest) {
     queryParams.audienceAge45PlusMax = parseFloat(searchParams.get('audienceAge45PlusMax')!)
   }
   
-  // Advanced Features - Post Performance
   if (searchParams.get('instagramAvgLikesMin')) {
     queryParams.instagramAvgLikesMin = parseInt(searchParams.get('instagramAvgLikesMin')!)
   }
@@ -217,7 +207,6 @@ async function parseQueryParams(request: NextRequest) {
     queryParams.tiktokAvgCommentsMax = parseInt(searchParams.get('tiktokAvgCommentsMax')!)
   }
   
-  // Advanced Features - Location
   if (searchParams.get('locationUsMin')) {
     queryParams.locationUsMin = parseFloat(searchParams.get('locationUsMin')!)
   }
@@ -237,7 +226,6 @@ async function parseQueryParams(request: NextRequest) {
     queryParams.locationCanadaMax = parseFloat(searchParams.get('locationCanadaMax')!)
   }
   
-  // Pagination
   if (searchParams.get('page')) {
     queryParams.page = parseInt(searchParams.get('page')!)
   }
@@ -255,8 +243,6 @@ async function parseQueryParams(request: NextRequest) {
 }
 
 export async function GET(request: NextRequest) {
-  
-  // Use stricter rate limiting for search requests
   const useSearchRateLimit = hasSearchParams(request)
   
   return withMiddleware(request, handleAthletesRequest, {

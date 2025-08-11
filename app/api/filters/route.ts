@@ -20,6 +20,6 @@ async function handleFiltersRequest(request: NextRequest) {
 export async function GET(request: NextRequest) {
   return withMiddleware(request, handleFiltersRequest, {
     enableRateLimit: true,
-    enableValidation: false // No query parameters to validate
+    enableValidation: false
   })
 }

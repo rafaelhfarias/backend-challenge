@@ -16,13 +16,12 @@ export function AthleteFilters({ filters = {}, filterOptions, onFiltersChange }:
   const [localFilters, setLocalFilters] = useState<Partial<AthleteFiltersType>>(filters)
   const [showAdvanced, setShowAdvanced] = useState(false)
 
-  // Debounced search effect
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       if (localFilters.search !== filters.search) {
         onFiltersChange(localFilters)
       }
-    }, 300) // 300ms delay
+    }, 300)
 
     return () => clearTimeout(timeoutId)
   }, [localFilters.search, filters.search, onFiltersChange])

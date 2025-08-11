@@ -1,6 +1,5 @@
 import { z } from 'zod'
 
-// Enhanced validation schemas with better error messages and sanitization
 export const PaginationSchema = z.object({
   page: z.coerce.number().int().min(1).max(1000).default(1),
   pageSize: z.coerce.number().int().min(1).max(100).default(20),
@@ -53,7 +52,6 @@ export const PlatformFiltersSchema = z.object({
   tiktokFollowersMax: z.coerce.number().int().min(0).max(10000000).optional()
 })
 
-// Advanced Features Schemas
 export const DateRangesSchema = z.object({
   createdAfter: z.string().optional(),
   createdBefore: z.string().optional(),
@@ -62,7 +60,7 @@ export const DateRangesSchema = z.object({
 })
 
 export const ContentCategoriesSchema = z.object({
-  categoryIds: z.string().optional(), // Will be parsed as comma-separated string
+  categoryIds: z.string().optional(),
   categoryConfidenceMin: z.coerce.number().min(0).max(100).optional(),
   categoryConfidenceMax: z.coerce.number().min(0).max(100).optional()
 })
@@ -105,7 +103,6 @@ export const LocationSchema = z.object({
   locationCanadaMax: z.coerce.number().min(0).max(100).optional()
 })
 
-// Combined schema for all athlete filters
 export const AthleteFiltersValidationSchema = z.object({
   ...PaginationSchema.shape,
   ...SearchSchema.shape,
@@ -120,7 +117,6 @@ export const AthleteFiltersValidationSchema = z.object({
   ...PostPerformanceSchema.shape,
   ...LocationSchema.shape
 }).refine((data) => {
-  // Validate that min values are not greater than max values
   if (data.scoreMin !== undefined && data.scoreMax !== undefined && data.scoreMin > data.scoreMax) {
     return false
   }
@@ -136,7 +132,6 @@ export const AthleteFiltersValidationSchema = z.object({
   path: ["rangeValidation"]
 })
 
-// Validation error formatter
 export function formatValidationError(error: z.ZodError): { message: string; details: Record<string, string[]> } {
   const details: Record<string, string[]> = {}
   
@@ -154,11 +149,9 @@ export function formatValidationError(error: z.ZodError): { message: string; det
   }
 }
 
-// Sanitize and validate query parameters
 export function validateAndSanitizeQueryParams(searchParams: URLSearchParams) {
   const queryParams: Record<string, any> = {}
   
-  // Extract all parameters
   for (const [key, value] of searchParams.entries()) {
     if (value !== null && value !== undefined && value !== '') {
       queryParams[key] = value
@@ -168,7 +161,6 @@ export function validateAndSanitizeQueryParams(searchParams: URLSearchParams) {
   try {
     const validatedParams = AthleteFiltersValidationSchema.parse(queryParams)
     
-    // Process categoryIds - convert string to array
     if (validatedParams.categoryIds) {
       validatedParams.categoryIds = validatedParams.categoryIds.split(',').map(id => parseInt(id))
     }

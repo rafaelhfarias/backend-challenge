@@ -20,7 +20,6 @@ export async function withMiddleware(
   } = options
 
   try {
-    // Rate limiting
     if (enableRateLimit) {
       const rateLimiter = useSearchRateLimit ? searchRateLimiter : apiRateLimiter
       const rateLimitResult = rateLimiter.checkLimit(request)
@@ -44,13 +43,11 @@ export async function withMiddleware(
         )
       }
 
-      // Validation
       if (enableValidation) {
         try {
           const { searchParams } = new URL(request.url)
           const validatedParams = validateAndSanitizeQueryParams(searchParams)
           
-          // Call handler with validated params and add rate limit headers
           const response = await handler(request, validatedParams)
           response.headers.set('X-RateLimit-Limit', rateLimiter['maxRequests'].toString())
           response.headers.set('X-RateLimit-Remaining', rateLimitResult.remaining.toString())
@@ -67,7 +64,6 @@ export async function withMiddleware(
           )
         }
       } else {
-        // Only rate limiting, no validation
         const response = await handler(request)
         response.headers.set('X-RateLimit-Limit', rateLimiter['maxRequests'].toString())
         response.headers.set('X-RateLimit-Remaining', rateLimitResult.remaining.toString())
@@ -76,7 +72,6 @@ export async function withMiddleware(
       }
     }
 
-    // Only validation, no rate limiting
     if (enableValidation) {
       try {
         const { searchParams } = new URL(request.url)
@@ -94,7 +89,6 @@ export async function withMiddleware(
       }
     }
 
-    // No middleware, just call handler
     return await handler(request)
   } catch (error) {
     console.error('Middleware error:', error)
@@ -108,7 +102,6 @@ export async function withMiddleware(
   }
 }
 
-// Utility function to check if request has search parameters
 export function hasSearchParams(request: NextRequest): boolean {
   const { searchParams } = new URL(request.url)
   return searchParams.has('search') && searchParams.get('search')?.trim() !== ''
