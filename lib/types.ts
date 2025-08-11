@@ -51,6 +51,12 @@ export const AthleteFiltersSchema = z.object({
 
 export type AthleteFilters = z.infer<typeof AthleteFiltersSchema>
 
+// Highlighted text interface
+export interface HighlightedText {
+  text: string
+  highlighted: boolean
+}
+
 // Response types
 export interface AthleteResponse {
   id: number
@@ -112,6 +118,10 @@ export interface AthleteResponse {
     name: string
     confidenceScore: number
   }>
+  // Search highlighting (optional)
+  highlightedName?: HighlightedText[]
+  highlightedEmail?: HighlightedText[]
+  highlightedSchool?: HighlightedText[]
 }
 
 export interface PaginatedResponse<T> {

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Input } from '@/components/ui/input'
 import { Select } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
@@ -14,6 +14,17 @@ interface AthleteFiltersProps {
 
 export function AthleteFilters({ filters = {}, filterOptions, onFiltersChange }: AthleteFiltersProps) {
   const [localFilters, setLocalFilters] = useState<Partial<AthleteFiltersType>>(filters)
+
+  // Debounced search effect
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (localFilters.search !== filters.search) {
+        onFiltersChange(localFilters)
+      }
+    }, 300) // 300ms delay
+
+    return () => clearTimeout(timeoutId)
+  }, [localFilters.search, filters.search, onFiltersChange])
 
   const handleInputChange = (key: keyof AthleteFiltersType, value: any) => {
     setLocalFilters(prev => ({ ...prev, [key]: value }))

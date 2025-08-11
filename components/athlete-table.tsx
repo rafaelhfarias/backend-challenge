@@ -11,6 +11,7 @@ import {
 import { AthleteResponse, AthletesResponse, AthleteFilters } from '@/lib/types'
 import { Button } from '@/components/ui/button'
 import { ChevronUp, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react'
+import { HighlightedTextComponent } from '@/components/ui/highlighted-text'
 
 interface AthleteTableProps {
   athletes: AthletesResponse | null
@@ -27,8 +28,26 @@ const columns = [
     header: 'Name',
     cell: (info) => (
       <div>
-        <div className="font-medium">{info.getValue()}</div>
-        <div className="text-sm text-gray-500">{info.row.original.email}</div>
+        <div className="font-medium">
+          {info.row.original.highlightedName ? (
+            <HighlightedTextComponent 
+              parts={info.row.original.highlightedName} 
+              highlightClassName="bg-yellow-200 font-semibold"
+            />
+          ) : (
+            info.getValue()
+          )}
+        </div>
+        <div className="text-sm text-gray-500">
+          {info.row.original.highlightedEmail ? (
+            <HighlightedTextComponent 
+              parts={info.row.original.highlightedEmail} 
+              highlightClassName="bg-yellow-200 font-semibold"
+            />
+          ) : (
+            info.row.original.email
+          )}
+        </div>
       </div>
     ),
   }),
@@ -36,7 +55,16 @@ const columns = [
     header: 'School',
     cell: (info) => (
       <div>
-        <div className="font-medium">{info.getValue().label}</div>
+        <div className="font-medium">
+          {info.row.original.highlightedSchool ? (
+            <HighlightedTextComponent 
+              parts={info.row.original.highlightedSchool} 
+              highlightClassName="bg-yellow-200 font-semibold"
+            />
+          ) : (
+            info.getValue().label
+          )}
+        </div>
         <div className="text-sm text-gray-500">{info.getValue().conference}</div>
       </div>
     ),

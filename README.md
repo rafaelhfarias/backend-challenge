@@ -9,7 +9,8 @@ This system provides a comprehensive athlete discovery platform with advanced fi
 ## Features
 
 ### Core Functionality
-- **Text Search**: Name, email, and school name search (case-insensitive)
+- **Advanced Text Search**: Fuzzy search with highlighting for names, emails, and school names
+- **Search Highlighting**: Visual highlighting of matched search terms in results
 - **Categorical Filters**: Gender, grade, alumni status, active status, sport, school, conference
 - **Performance Ranges**: Score, total followers, engagement rate (min/max)
 - **Demographics**: Ethnicity percentages, audience gender distribution
@@ -23,6 +24,8 @@ This system provides a comprehensive athlete discovery platform with advanced fi
 - **Type Safety**: Full TypeScript implementation
 - **Validation**: Robust input validation with Zod
 - **Rate Limiting**: Configurable rate limiting with IP-based tracking
+- **Fuzzy Search**: Fuse.js integration for intelligent text matching
+- **Search Highlighting**: Real-time highlighting of search matches
 - **Frontend**: Modern React interface with TanStack Table
 
 ## Technology Stack
@@ -107,7 +110,7 @@ Main endpoint for athlete discovery with advanced filtering.
 - **Headers**: `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset`
 
 **Query Parameters:**
-- `search`: Text search (name, email, school) - max 100 characters
+- `search`: Advanced fuzzy search (name, email, school, sports, categories) - max 100 characters
 - `gender`: Filter by gender (Male/Female)
 - `grade`: Filter by grade level (1-12)
 - `isAlumni`: Alumni status (true/false)
@@ -146,8 +149,15 @@ GET /api/athletes?gender=Female&sport=1&totalFollowersMin=10000
 GET /api/athletes?conference=SEC&ethnicityHispanicMin=40
 ```
 
-### Complex Search
+### Advanced Search Examples
 ```
+# Fuzzy search with highlighting
+GET /api/athletes?search=john
+
+# Search with partial matches
+GET /api/athletes?search=university
+
+# Complex search with filters
 GET /api/athletes?search=duke&gender=Female&scoreMin=80&engagementRateMin=5
 ```
 
@@ -157,6 +167,12 @@ GET /api/athletes?search=duke&gender=Female&scoreMin=80&engagementRateMin=5
 ```bash
 # Test basic search
 curl "http://localhost:3000/api/athletes?pageSize=5"
+
+# Test advanced search with highlighting
+curl "http://localhost:3000/api/athletes?search=john&pageSize=3"
+
+# Test fuzzy search
+curl "http://localhost:3000/api/athletes?search=university&pageSize=3"
 
 # Test filters
 curl "http://localhost:3000/api/athletes?gender=Female&sport=1"
@@ -287,11 +303,15 @@ docker-compose down
 - Typed responses
 - Rate limiting with IP-based tracking
 - Request sanitization and parameter validation
+- Fuzzy search with Fuse.js integration
+- Search result highlighting
 
 ### Frontend
 - Debounced text filters
 - Client-side pagination
 - Optimized React components
+- Search highlighting components
+- Real-time search feedback
 
 ## Architecture
 
@@ -305,6 +325,7 @@ docker-compose down
 │   └── layout.tsx         # App layout
 ├── components/            # React components
 │   ├── ui/               # Base UI components
+│   │   └── highlighted-text.tsx # Search highlighting component
 │   ├── athlete-table.tsx # Main table
 │   ├── athlete-filters.tsx # Filters
 │   └── athlete-stats.tsx # Statistics
@@ -315,7 +336,8 @@ docker-compose down
 │   ├── athlete-service.ts # Business logic
 │   ├── rate-limiter.ts   # Rate limiting implementation
 │   ├── validation.ts     # Request validation schemas
-│   └── middleware.ts     # API middleware utilities
+│   ├── middleware.ts     # API middleware utilities
+│   └── search-utils.ts   # Fuzzy search and highlighting
 ├── prisma/               # Database configuration
 │   ├── schema.prisma     # Database schema
 │   └── seed.ts           # Seed script
@@ -387,3 +409,58 @@ Comprehensive validation ensures data integrity and security:
 - **400 Bad Request**: Validation errors with detailed feedback
 - **500 Internal Server Error**: Unexpected server errors
 - **Consistent format**: All errors follow the same response structure
+
+## Advanced Search Features
+
+### Fuzzy Search Implementation
+The system implements intelligent fuzzy search using Fuse.js with the following capabilities:
+
+- **Multi-field Search**: Searches across names, emails, school names, sports, and categories
+- **Fuzzy Matching**: Handles typos, partial matches, and approximate text matching
+- **Configurable Threshold**: Adjustable sensitivity for search accuracy
+- **Weighted Results**: Different weights for different field types (name: 0.7, email: 0.5, school: 0.6)
+
+### Search Highlighting
+Real-time highlighting of search matches in the UI:
+
+- **Visual Feedback**: Matched terms are highlighted with yellow background
+- **Multiple Matches**: Handles multiple occurrences of search terms
+- **Case Insensitive**: Highlights regardless of case differences
+- **Field-specific Highlighting**: Different highlighting for names, emails, and school names
+
+### Search Configuration
+```javascript
+// Fuse.js configuration
+{
+  keys: [
+    { name: 'name', weight: 0.7 },
+    { name: 'email', weight: 0.5 },
+    { name: 'school.name', weight: 0.6 },
+    { name: 'sports.name', weight: 0.4 },
+    { name: 'categories.category.name', weight: 0.3 }
+  ],
+  threshold: 0.3,        // Search sensitivity
+  distance: 100,         // Maximum edit distance
+  includeMatches: true,  // Include match data for highlighting
+  minMatchCharLength: 2  // Minimum characters to match
+}
+```
+
+### Search Response Format
+Search results include highlighted text arrays for matched fields:
+
+```json
+{
+  "id": 1,
+  "name": "John Smith",
+  "highlightedName": [
+    { "text": "John", "highlighted": true },
+    { "text": " Smith", "highlighted": false }
+  ],
+  "email": "john.smith@example.com",
+  "highlightedEmail": [
+    { "text": "john", "highlighted": true },
+    { "text": ".smith@example.com", "highlighted": false }
+  ]
+}
+```

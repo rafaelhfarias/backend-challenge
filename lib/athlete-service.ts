@@ -1,5 +1,6 @@
 import { prisma } from './prisma'
-import { AthleteFilters, AthleteResponse, AthletesResponse, FilterOptions } from './types'
+import { AthleteFilters, AthleteResponse, AthletesResponse, FilterOptions, HighlightedText } from './types'
+import { createFuseInstance, fuzzySearch, highlightTextWithMatches, calculateRelevanceScore } from './search-utils'
 
 export class AthleteService {
   static async getAthletes(filters: AthleteFilters): Promise<AthletesResponse> {
@@ -45,7 +46,7 @@ export class AthleteService {
       AND: [],
     }
 
-    // Text search
+    // Text search - use database search for initial filtering
     if (search) {
       where.AND.push({
         OR: [
@@ -154,12 +155,10 @@ export class AthleteService {
       where.AND.push({ tiktokFollowers: filter })
     }
 
-    // Remove empty AND array if no filters
     if (where.AND.length === 0) {
       delete where.AND
     }
 
-    // Build order by
     const orderBy: any = {}
     if (sortBy === 'name') orderBy.name = sortOrder
     else if (sortBy === 'score') orderBy.score = sortOrder
@@ -168,10 +167,8 @@ export class AthleteService {
     else if (sortBy === 'age') orderBy.age = sortOrder
     else orderBy.score = 'desc'
 
-    // Get total count
     const total = await prisma.athlete.count({ where })
 
-    // Get paginated results
     const athletes = await prisma.athlete.findMany({
       where,
       orderBy,
@@ -188,72 +185,100 @@ export class AthleteService {
       },
     })
 
-    // Transform to response format
-    const data: AthleteResponse[] = athletes.map((athlete) => ({
-      id: athlete.id,
-      name: athlete.name,
-      email: athlete.email,
-      gender: athlete.gender,
-      isAlumni: athlete.isAlumni,
-      grade: athlete.grade,
-      isActive: athlete.isActive,
-      needsReview: athlete.needsReview,
-      school: {
-        id: athlete.school.id,
-        label: athlete.school.label,
-        name: athlete.school.name,
-        state: athlete.school.state,
-        conference: athlete.school.conference,
-      },
-      sports: athlete.sports.map((sport) => ({
-        id: sport.id,
-        label: sport.label,
-        name: sport.name,
-      })),
-      currentScore: {
-        score: athlete.score,
-        totalFollowers: athlete.totalFollowers,
-        engagementRate: athlete.engagementRate,
-        audienceQualityScore: athlete.audienceQualityScore,
-        contentPerformanceScore: athlete.contentPerformanceScore,
-      },
-      platforms: {
-        ...(athlete.instagramUsername && {
-          instagram: {
-            username: athlete.instagramUsername,
-            followers: athlete.instagramFollowers || 0,
-            engagementRate: athlete.instagramEngagementRate || 0,
-          },
-        }),
-        ...(athlete.tiktokUsername && {
-          tiktok: {
-            username: athlete.tiktokUsername,
-            followers: athlete.tiktokFollowers || 0,
-            engagementRate: athlete.tiktokEngagementRate || 0,
-          },
-        }),
-      },
-      demographics: {
-        age: athlete.age,
-        ageRange: athlete.ageRange,
-        ethnicity: {
-          hispanic: athlete.ethnicityHispanic,
-          white: athlete.ethnicityWhite,
-          black: athlete.ethnicityBlack,
-          asian: athlete.ethnicityAsian,
-          other: athlete.ethnicityOther,
+    const data: AthleteResponse[] = athletes.map((athlete) => {
+      const baseResponse: AthleteResponse = {
+        id: athlete.id,
+        name: athlete.name,
+        email: athlete.email,
+        gender: athlete.gender,
+        isAlumni: athlete.isAlumni,
+        grade: athlete.grade,
+        isActive: athlete.isActive,
+        needsReview: athlete.needsReview,
+        school: {
+          id: athlete.school.id,
+          label: athlete.school.label,
+          name: athlete.school.name,
+          state: athlete.school.state,
+          conference: athlete.school.conference,
         },
-        audienceGender: {
-          male: athlete.audienceGenderMale,
-          female: athlete.audienceGenderFemale,
+        sports: athlete.sports.map((sport) => ({
+          id: sport.id,
+          label: sport.label,
+          name: sport.name,
+        })),
+        currentScore: {
+          score: athlete.score,
+          totalFollowers: athlete.totalFollowers,
+          engagementRate: athlete.engagementRate,
+          audienceQualityScore: athlete.audienceQualityScore,
+          contentPerformanceScore: athlete.contentPerformanceScore,
         },
-      },
-      categories: athlete.categories.map((ac) => ({
-        id: ac.category.id,
-        name: ac.category.name,
-        confidenceScore: ac.confidenceScore,
-      })),
-    }))
+        platforms: {
+          ...(athlete.instagramUsername && {
+            instagram: {
+              username: athlete.instagramUsername,
+              followers: athlete.instagramFollowers || 0,
+              engagementRate: athlete.instagramEngagementRate || 0,
+            },
+          }),
+          ...(athlete.tiktokUsername && {
+            tiktok: {
+              username: athlete.tiktokUsername,
+              followers: athlete.tiktokFollowers || 0,
+              engagementRate: athlete.tiktokEngagementRate || 0,
+            },
+          }),
+        },
+        demographics: {
+          age: athlete.age,
+          ageRange: athlete.ageRange,
+          ethnicity: {
+            hispanic: athlete.ethnicityHispanic,
+            white: athlete.ethnicityWhite,
+            black: athlete.ethnicityBlack,
+            asian: athlete.ethnicityAsian,
+            other: athlete.ethnicityOther,
+          },
+          audienceGender: {
+            male: athlete.audienceGenderMale,
+            female: athlete.audienceGenderFemale,
+          },
+        },
+        categories: athlete.categories.map((ac) => ({
+          id: ac.category.id,
+          name: ac.category.name,
+          confidenceScore: ac.confidenceScore,
+        })),
+      }
+
+      if (search) {
+        const fuse = createFuseInstance([athlete])
+        const searchResults = fuzzySearch(fuse, search, 1)
+        
+        if (searchResults.length > 0) {
+          const result = searchResults[0]
+          
+          if (result.matches) {
+            const nameMatch = result.matches.find(m => m.key === 'name')
+            const emailMatch = result.matches.find(m => m.key === 'email')
+            const schoolMatch = result.matches.find(m => m.key === 'school.name')
+            
+            if (nameMatch) {
+              baseResponse.highlightedName = highlightTextWithMatches(athlete.name, [nameMatch])
+            }
+            if (emailMatch) {
+              baseResponse.highlightedEmail = highlightTextWithMatches(athlete.email, [emailMatch])
+            }
+            if (schoolMatch) {
+              baseResponse.highlightedSchool = highlightTextWithMatches(athlete.school.name, [schoolMatch])
+            }
+          }
+        }
+      }
+
+      return baseResponse
+    })
 
     const totalPages = Math.ceil(total / pageSize)
 
