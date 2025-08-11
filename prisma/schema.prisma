@@ -1,0 +1,151 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model School {
+  id         Int       @id @default(autoincrement())
+  label      String    @unique
+  name       String
+  state      String
+  conference String
+  athletes   Athlete[]
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@index([conference])
+  @@index([state])
+}
+
+model Sport {
+  id       Int       @id @default(autoincrement())
+  label    String    @unique
+  name     String
+  athletes Athlete[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Category {
+  id       Int       @id @default(autoincrement())
+  name     String    @unique
+  athletes AthleteCategory[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Athlete {
+  id          Int      @id @default(autoincrement())
+  name        String
+  email       String   @unique
+  gender      String
+  isAlumni    Boolean  @default(false)
+  grade       String
+  isActive    Boolean  @default(true)
+  needsReview Boolean  @default(false)
+  
+  // School relationship
+  schoolId    Int
+  school      School   @relation(fields: [schoolId], references: [id])
+  
+  // Sports relationship (many-to-many)
+  sports      Sport[]
+  
+  // Current Score
+  score               Float
+  totalFollowers      Int
+  engagementRate      Float
+  audienceQualityScore Float
+  contentPerformanceScore Float
+  
+  // Platform data
+  instagramUsername   String?
+  instagramUserId     String?
+  instagramFollowers  Int?
+  instagramFollowing  Int?
+  instagramPosts      Int?
+  instagramEngagementRate Float?
+  instagramAvgLikes   Int?
+  instagramAvgComments Int?
+  
+  tiktokUsername      String?
+  tiktokUserId        String?
+  tiktokFollowers     Int?
+  tiktokFollowing     Int?
+  tiktokPosts         Int?
+  tiktokEngagementRate Float?
+  tiktokAvgLikes      Int?
+  tiktokAvgComments   Int?
+  
+  // Demographics
+  age                 Int
+  ageRange            String
+  ethnicityHispanic   Float
+  ethnicityWhite      Float
+  ethnicityBlack      Float
+  ethnicityAsian      Float
+  ethnicityOther      Float
+  audienceGenderMale   Float
+  audienceGenderFemale Float
+  locationUs          Float
+  locationMexico      Float
+  locationCanada      Float
+  locationOther       Float
+  topCities           String // JSON string
+  audienceAge13_17    Float
+  audienceAge18_24    Float
+  audienceAge25_34    Float
+  audienceAge35_44    Float
+  audienceAge45Plus   Float
+  interests           String // JSON string
+  
+  // Categories relationship (many-to-many)
+  categories AthleteCategory[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([name])
+  @@index([email])
+  @@index([gender])
+  @@index([isAlumni])
+  @@index([grade])
+  @@index([isActive])
+  @@index([schoolId])
+  @@index([score])
+  @@index([totalFollowers])
+  @@index([engagementRate])
+  @@index([age])
+  @@index([ethnicityHispanic])
+  @@index([ethnicityWhite])
+  @@index([ethnicityBlack])
+  @@index([ethnicityAsian])
+  @@index([audienceGenderMale])
+  @@index([audienceGenderFemale])
+  @@index([locationUs])
+  @@index([instagramFollowers])
+  @@index([tiktokFollowers])
+}
+
+model AthleteCategory {
+  id         Int      @id @default(autoincrement())
+  athleteId  Int
+  categoryId Int
+  confidenceScore Float
+  athlete    Athlete  @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([athleteId, categoryId])
+  @@index([athleteId])
+  @@index([categoryId])
+  @@index([confidenceScore])
+}
