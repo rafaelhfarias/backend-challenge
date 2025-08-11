@@ -6,6 +6,7 @@ import { withCache, addCacheHeaders } from '@/lib/cache-middleware'
 async function handleAthletesRequest(request: NextRequest, validatedParams?: any) {
   try {
     const filters = validatedParams || await parseQueryParams(request)
+    
     const result = await AthleteService.getAthletes(filters)
     
     const response = NextResponse.json(result)
@@ -140,7 +141,8 @@ async function parseQueryParams(request: NextRequest) {
   
   // Advanced Features - Content Categories
   if (searchParams.get('categoryIds')) {
-    queryParams.categoryIds = searchParams.get('categoryIds')!.split(',').map(id => parseInt(id))
+    const categoryIdsStr = searchParams.get('categoryIds')!
+    queryParams.categoryIds = categoryIdsStr.split(',').map(id => parseInt(id))
   }
   if (searchParams.get('categoryConfidenceMin')) {
     queryParams.categoryConfidenceMin = parseFloat(searchParams.get('categoryConfidenceMin')!)
@@ -253,6 +255,7 @@ async function parseQueryParams(request: NextRequest) {
 }
 
 export async function GET(request: NextRequest) {
+  
   // Use stricter rate limiting for search requests
   const useSearchRateLimit = hasSearchParams(request)
   

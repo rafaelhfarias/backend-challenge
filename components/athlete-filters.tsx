@@ -107,9 +107,9 @@ export function AthleteFilters({ filters = {}, filterOptions, onFiltersChange }:
               className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
             >
               <option value="">All</option>
-              {filterOptions.grades.map((grade) => (
+              {filterOptions?.grades?.map((grade) => (
                 <option key={grade} value={grade}>{grade}</option>
-              ))}
+              )) || []}
             </Select>
           </div>
 
@@ -124,11 +124,11 @@ export function AthleteFilters({ filters = {}, filterOptions, onFiltersChange }:
               className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
             >
               <option value="">All Schools</option>
-              {filterOptions.schools.map((school) => (
+              {filterOptions?.schools?.map((school) => (
                 <option key={school.id} value={school.id}>
                   {school.label} ({school.conference})
                 </option>
-              ))}
+              )) || []}
             </Select>
           </div>
 
@@ -143,9 +143,9 @@ export function AthleteFilters({ filters = {}, filterOptions, onFiltersChange }:
               className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
             >
               <option value="">All Conferences</option>
-              {filterOptions.conferences.map((conference) => (
+              {filterOptions?.conferences?.map((conference) => (
                 <option key={conference} value={conference}>{conference}</option>
-              ))}
+              )) || []}
             </Select>
           </div>
 
@@ -160,9 +160,9 @@ export function AthleteFilters({ filters = {}, filterOptions, onFiltersChange }:
               className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
             >
               <option value="">All Sports</option>
-              {filterOptions.sports.map((sport) => (
+              {filterOptions?.sports?.map((sport) => (
                 <option key={sport.id} value={sport.id}>{sport.label}</option>
-              ))}
+              )) || []}
             </Select>
           </div>
 
@@ -328,185 +328,290 @@ export function AthleteFilters({ filters = {}, filterOptions, onFiltersChange }:
             <h3 className="text-lg font-semibold text-gray-900">Advanced Filters</h3>
             
             {/* Date Ranges */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-semibold text-gray-800 mb-2">
                   Created Date Range
                 </label>
-                <div className="grid grid-cols-2 gap-2">
-                  <Input
-                    type="date"
-                    value={localFilters.createdAfter || ''}
-                    onChange={(e) => handleInputChange('createdAfter', e.target.value || undefined)}
-                  />
-                  <Input
-                    type="date"
-                    value={localFilters.createdBefore || ''}
-                    onChange={(e) => handleInputChange('createdBefore', e.target.value || undefined)}
-                  />
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs text-gray-600 mb-1">From Date</label>
+                    <Input
+                      type="date"
+                      value={localFilters.createdAfter || ''}
+                      onChange={(e) => handleInputChange('createdAfter', e.target.value || undefined)}
+                      className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-gray-600 mb-1">To Date</label>
+                    <Input
+                      type="date"
+                      value={localFilters.createdBefore || ''}
+                      onChange={(e) => handleInputChange('createdBefore', e.target.value || undefined)}
+                      className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                    />
+                  </div>
                 </div>
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-semibold text-gray-800 mb-2">
                   Updated Date Range
                 </label>
-                <div className="grid grid-cols-2 gap-2">
-                  <Input
-                    type="date"
-                    value={localFilters.updatedAfter || ''}
-                    onChange={(e) => handleInputChange('updatedAfter', e.target.value || undefined)}
-                  />
-                  <Input
-                    type="date"
-                    value={localFilters.updatedBefore || ''}
-                    onChange={(e) => handleInputChange('updatedBefore', e.target.value || undefined)}
-                  />
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs text-gray-600 mb-1">From Date</label>
+                    <Input
+                      type="date"
+                      value={localFilters.updatedAfter || ''}
+                      onChange={(e) => handleInputChange('updatedAfter', e.target.value || undefined)}
+                      className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-gray-600 mb-1">To Date</label>
+                    <Input
+                      type="date"
+                      value={localFilters.updatedBefore || ''}
+                      onChange={(e) => handleInputChange('updatedBefore', e.target.value || undefined)}
+                      className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Content Categories */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                             <div>
-                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                   Categories
-                 </label>
-                 <select
-                   multiple
-                   className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                   value={localFilters.categoryIds?.map(String) || []}
-                   onChange={(e) => {
-                     const values = Array.from(e.target.selectedOptions, option => parseInt(option.value))
-                     handleInputChange('categoryIds', values)
-                   }}
-                 >
-                   {filterOptions.categories.map((category) => (
-                     <option key={category.id} value={category.id}>{category.name}</option>
-                   ))}
-                 </select>
-               </div>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-800 mb-2">
+                  Categories
+                </label>
+                <div className="border border-gray-300 rounded-md p-3 bg-white max-h-40 overflow-y-auto">
+                  {filterOptions?.categories?.length > 0 ? (
+                    <div className="space-y-2">
+                      {filterOptions.categories.map((category) => (
+                        <label key={category.id} className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
+                          <input
+                            type="checkbox"
+                            checked={localFilters.categoryIds?.includes(category.id) || false}
+                            onChange={(e) => {
+                              const currentIds = localFilters.categoryIds || []
+                              let newIds
+                              if (e.target.checked) {
+                                newIds = [...currentIds, category.id]
+                              } else {
+                                newIds = currentIds.filter(id => id !== category.id)
+                              }
+                              handleInputChange('categoryIds', newIds)
+                            }}
+                            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                          />
+                          <span className="text-sm text-gray-700">{category.name}</span>
+                        </label>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-sm text-gray-500 text-center py-4">
+                      No categories available
+                    </div>
+                  )}
+                </div>
+              </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-semibold text-gray-800 mb-2">
                   Category Confidence Range (%)
                 </label>
-                <div className="grid grid-cols-2 gap-2">
-                  <Input
-                    placeholder="Min"
-                    type="number"
-                    step="0.1"
-                    value={localFilters.categoryConfidenceMin || ''}
-                    onChange={(e) => handleInputChange('categoryConfidenceMin', e.target.value ? parseFloat(e.target.value) : undefined)}
-                  />
-                  <Input
-                    placeholder="Max"
-                    type="number"
-                    step="0.1"
-                    value={localFilters.categoryConfidenceMax || ''}
-                    onChange={(e) => handleInputChange('categoryConfidenceMax', e.target.value ? parseFloat(e.target.value) : undefined)}
-                  />
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs text-gray-600 mb-1">Min Confidence</label>
+                    <Input
+                      placeholder="0"
+                      type="number"
+                      min="0"
+                      max="100"
+                      step="0.1"
+                      value={localFilters.categoryConfidenceMin || ''}
+                      onChange={(e) => handleInputChange('categoryConfidenceMin', e.target.value ? parseFloat(e.target.value) : undefined)}
+                      className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-gray-600 mb-1">Max Confidence</label>
+                    <Input
+                      placeholder="100"
+                      type="number"
+                      min="0"
+                      max="100"
+                      step="0.1"
+                      value={localFilters.categoryConfidenceMax || ''}
+                      onChange={(e) => handleInputChange('categoryConfidenceMax', e.target.value ? parseFloat(e.target.value) : undefined)}
+                      className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Complex Demographics */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Audience Age Distribution (%)</label>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+              <label className="block text-sm font-semibold text-gray-800 mb-4">Audience Age Distribution (%)</label>
+              <div className="space-y-4">
                 <div>
-                  <label className="block text-xs text-gray-600 mb-1">13-17</label>
-                  <div className="grid grid-cols-2 gap-1">
-                    <Input
-                      placeholder="Min"
-                      type="number"
-                      step="0.1"
-                      value={localFilters.audienceAge13_17Min || ''}
-                      onChange={(e) => handleInputChange('audienceAge13_17Min', e.target.value ? parseFloat(e.target.value) : undefined)}
-                    />
-                    <Input
-                      placeholder="Max"
-                      type="number"
-                      step="0.1"
-                      value={localFilters.audienceAge13_17Max || ''}
-                      onChange={(e) => handleInputChange('audienceAge13_17Max', e.target.value ? parseFloat(e.target.value) : undefined)}
-                    />
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Age 13-17</label>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs text-gray-600 mb-1">Minimum Percentage</label>
+                      <Input
+                        placeholder="0"
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="0.1"
+                        value={localFilters.audienceAge13_17Min || ''}
+                        onChange={(e) => handleInputChange('audienceAge13_17Min', e.target.value ? parseFloat(e.target.value) : undefined)}
+                        className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-gray-600 mb-1">Maximum Percentage</label>
+                      <Input
+                        placeholder="100"
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="0.1"
+                        value={localFilters.audienceAge13_17Max || ''}
+                        onChange={(e) => handleInputChange('audienceAge13_17Max', e.target.value ? parseFloat(e.target.value) : undefined)}
+                        className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      />
+                    </div>
                   </div>
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-600 mb-1">18-24</label>
-                  <div className="grid grid-cols-2 gap-1">
-                    <Input
-                      placeholder="Min"
-                      type="number"
-                      step="0.1"
-                      value={localFilters.audienceAge18_24Min || ''}
-                      onChange={(e) => handleInputChange('audienceAge18_24Min', e.target.value ? parseFloat(e.target.value) : undefined)}
-                    />
-                    <Input
-                      placeholder="Max"
-                      type="number"
-                      step="0.1"
-                      value={localFilters.audienceAge18_24Max || ''}
-                      onChange={(e) => handleInputChange('audienceAge18_24Max', e.target.value ? parseFloat(e.target.value) : undefined)}
-                    />
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Age 18-24</label>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs text-gray-600 mb-1">Minimum Percentage</label>
+                      <Input
+                        placeholder="0"
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="0.1"
+                        value={localFilters.audienceAge18_24Min || ''}
+                        onChange={(e) => handleInputChange('audienceAge18_24Min', e.target.value ? parseFloat(e.target.value) : undefined)}
+                        className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-gray-600 mb-1">Maximum Percentage</label>
+                      <Input
+                        placeholder="100"
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="0.1"
+                        value={localFilters.audienceAge18_24Max || ''}
+                        onChange={(e) => handleInputChange('audienceAge18_24Max', e.target.value ? parseFloat(e.target.value) : undefined)}
+                        className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      />
+                    </div>
                   </div>
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-600 mb-1">25-34</label>
-                  <div className="grid grid-cols-2 gap-1">
-                    <Input
-                      placeholder="Min"
-                      type="number"
-                      step="0.1"
-                      value={localFilters.audienceAge25_34Min || ''}
-                      onChange={(e) => handleInputChange('audienceAge25_34Min', e.target.value ? parseFloat(e.target.value) : undefined)}
-                    />
-                    <Input
-                      placeholder="Max"
-                      type="number"
-                      step="0.1"
-                      value={localFilters.audienceAge25_34Max || ''}
-                      onChange={(e) => handleInputChange('audienceAge25_34Max', e.target.value ? parseFloat(e.target.value) : undefined)}
-                    />
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Age 25-34</label>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs text-gray-600 mb-1">Minimum Percentage</label>
+                      <Input
+                        placeholder="0"
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="0.1"
+                        value={localFilters.audienceAge25_34Min || ''}
+                        onChange={(e) => handleInputChange('audienceAge25_34Min', e.target.value ? parseFloat(e.target.value) : undefined)}
+                        className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-gray-600 mb-1">Maximum Percentage</label>
+                      <Input
+                        placeholder="100"
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="0.1"
+                        value={localFilters.audienceAge25_34Max || ''}
+                        onChange={(e) => handleInputChange('audienceAge25_34Max', e.target.value ? parseFloat(e.target.value) : undefined)}
+                        className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      />
+                    </div>
                   </div>
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-600 mb-1">35-44</label>
-                  <div className="grid grid-cols-2 gap-1">
-                    <Input
-                      placeholder="Min"
-                      type="number"
-                      step="0.1"
-                      value={localFilters.audienceAge35_44Min || ''}
-                      onChange={(e) => handleInputChange('audienceAge35_44Min', e.target.value ? parseFloat(e.target.value) : undefined)}
-                    />
-                    <Input
-                      placeholder="Max"
-                      type="number"
-                      step="0.1"
-                      value={localFilters.audienceAge35_44Max || ''}
-                      onChange={(e) => handleInputChange('audienceAge35_44Max', e.target.value ? parseFloat(e.target.value) : undefined)}
-                    />
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Age 35-44</label>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs text-gray-600 mb-1">Minimum Percentage</label>
+                      <Input
+                        placeholder="0"
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="0.1"
+                        value={localFilters.audienceAge35_44Min || ''}
+                        onChange={(e) => handleInputChange('audienceAge35_44Min', e.target.value ? parseFloat(e.target.value) : undefined)}
+                        className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-gray-600 mb-1">Maximum Percentage</label>
+                      <Input
+                        placeholder="100"
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="0.1"
+                        value={localFilters.audienceAge35_44Max || ''}
+                        onChange={(e) => handleInputChange('audienceAge35_44Max', e.target.value ? parseFloat(e.target.value) : undefined)}
+                        className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      />
+                    </div>
                   </div>
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-600 mb-1">45+</label>
-                  <div className="grid grid-cols-2 gap-1">
-                    <Input
-                      placeholder="Min"
-                      type="number"
-                      step="0.1"
-                      value={localFilters.audienceAge45PlusMin || ''}
-                      onChange={(e) => handleInputChange('audienceAge45PlusMin', e.target.value ? parseFloat(e.target.value) : undefined)}
-                    />
-                    <Input
-                      placeholder="Max"
-                      type="number"
-                      step="0.1"
-                      value={localFilters.audienceAge45PlusMax || ''}
-                      onChange={(e) => handleInputChange('audienceAge45PlusMax', e.target.value ? parseFloat(e.target.value) : undefined)}
-                    />
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Age 45+</label>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs text-gray-600 mb-1">Minimum Percentage</label>
+                      <Input
+                        placeholder="0"
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="0.1"
+                        value={localFilters.audienceAge45PlusMin || ''}
+                        onChange={(e) => handleInputChange('audienceAge45PlusMin', e.target.value ? parseFloat(e.target.value) : undefined)}
+                        className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-gray-600 mb-1">Maximum Percentage</label>
+                      <Input
+                        placeholder="100"
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="0.1"
+                        value={localFilters.audienceAge45PlusMax || ''}
+                        onChange={(e) => handleInputChange('audienceAge45PlusMax', e.target.value ? parseFloat(e.target.value) : undefined)}
+                        className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -514,63 +619,99 @@ export function AthleteFilters({ filters = {}, filterOptions, onFiltersChange }:
 
             {/* Location Demographics */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Location Distribution (%)</label>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <label className="block text-sm font-semibold text-gray-800 mb-4">Location Distribution (%)</label>
+              <div className="space-y-4">
                 <div>
-                  <label className="block text-xs text-gray-600 mb-1">United States</label>
-                  <div className="grid grid-cols-2 gap-2">
-                    <Input
-                      placeholder="Min"
-                      type="number"
-                      step="0.1"
-                      value={localFilters.locationUsMin || ''}
-                      onChange={(e) => handleInputChange('locationUsMin', e.target.value ? parseFloat(e.target.value) : undefined)}
-                    />
-                    <Input
-                      placeholder="Max"
-                      type="number"
-                      step="0.1"
-                      value={localFilters.locationUsMax || ''}
-                      onChange={(e) => handleInputChange('locationUsMax', e.target.value ? parseFloat(e.target.value) : undefined)}
-                    />
+                  <label className="block text-sm font-medium text-gray-700 mb-2">United States</label>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs text-gray-600 mb-1">Minimum Percentage</label>
+                      <Input
+                        placeholder="0"
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="0.1"
+                        value={localFilters.locationUsMin || ''}
+                        onChange={(e) => handleInputChange('locationUsMin', e.target.value ? parseFloat(e.target.value) : undefined)}
+                        className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-gray-600 mb-1">Maximum Percentage</label>
+                      <Input
+                        placeholder="100"
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="0.1"
+                        value={localFilters.locationUsMax || ''}
+                        onChange={(e) => handleInputChange('locationUsMax', e.target.value ? parseFloat(e.target.value) : undefined)}
+                        className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      />
+                    </div>
                   </div>
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-600 mb-1">Mexico</label>
-                  <div className="grid grid-cols-2 gap-2">
-                    <Input
-                      placeholder="Min"
-                      type="number"
-                      step="0.1"
-                      value={localFilters.locationMexicoMin || ''}
-                      onChange={(e) => handleInputChange('locationMexicoMin', e.target.value ? parseFloat(e.target.value) : undefined)}
-                    />
-                    <Input
-                      placeholder="Max"
-                      type="number"
-                      step="0.1"
-                      value={localFilters.locationMexicoMax || ''}
-                      onChange={(e) => handleInputChange('locationMexicoMax', e.target.value ? parseFloat(e.target.value) : undefined)}
-                    />
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Mexico</label>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs text-gray-600 mb-1">Minimum Percentage</label>
+                      <Input
+                        placeholder="0"
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="0.1"
+                        value={localFilters.locationMexicoMin || ''}
+                        onChange={(e) => handleInputChange('locationMexicoMin', e.target.value ? parseFloat(e.target.value) : undefined)}
+                        className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-gray-600 mb-1">Maximum Percentage</label>
+                      <Input
+                        placeholder="100"
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="0.1"
+                        value={localFilters.locationMexicoMax || ''}
+                        onChange={(e) => handleInputChange('locationMexicoMax', e.target.value ? parseFloat(e.target.value) : undefined)}
+                        className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      />
+                    </div>
                   </div>
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-600 mb-1">Canada</label>
-                  <div className="grid grid-cols-2 gap-2">
-                    <Input
-                      placeholder="Min"
-                      type="number"
-                      step="0.1"
-                      value={localFilters.locationCanadaMin || ''}
-                      onChange={(e) => handleInputChange('locationCanadaMin', e.target.value ? parseFloat(e.target.value) : undefined)}
-                    />
-                    <Input
-                      placeholder="Max"
-                      type="number"
-                      step="0.1"
-                      value={localFilters.locationCanadaMax || ''}
-                      onChange={(e) => handleInputChange('locationCanadaMax', e.target.value ? parseFloat(e.target.value) : undefined)}
-                    />
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Canada</label>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs text-gray-600 mb-1">Minimum Percentage</label>
+                      <Input
+                        placeholder="0"
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="0.1"
+                        value={localFilters.locationCanadaMin || ''}
+                        onChange={(e) => handleInputChange('locationCanadaMin', e.target.value ? parseFloat(e.target.value) : undefined)}
+                        className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-gray-600 mb-1">Maximum Percentage</label>
+                      <Input
+                        placeholder="100"
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="0.1"
+                        value={localFilters.locationCanadaMax || ''}
+                        onChange={(e) => handleInputChange('locationCanadaMax', e.target.value ? parseFloat(e.target.value) : undefined)}
+                        className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -578,74 +719,114 @@ export function AthleteFilters({ filters = {}, filterOptions, onFiltersChange }:
 
             {/* Post Performance */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Post Performance Metrics</label>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <label className="block text-sm font-semibold text-gray-800 mb-2">Post Performance Metrics</label>
+              <div className="space-y-4">
                 <div>
-                  <label className="block text-xs text-gray-600 mb-1">Instagram Avg Likes</label>
-                  <div className="grid grid-cols-2 gap-2">
-                    <Input
-                      placeholder="Min"
-                      type="number"
-                      value={localFilters.instagramAvgLikesMin || ''}
-                      onChange={(e) => handleInputChange('instagramAvgLikesMin', e.target.value ? parseInt(e.target.value) : undefined)}
-                    />
-                    <Input
-                      placeholder="Max"
-                      type="number"
-                      value={localFilters.instagramAvgLikesMax || ''}
-                      onChange={(e) => handleInputChange('instagramAvgLikesMax', e.target.value ? parseInt(e.target.value) : undefined)}
-                    />
+                  <label className="block text-sm font-semibold text-gray-800 mb-2">Instagram Avg Likes</label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs text-gray-600 mb-1">Min Likes</label>
+                      <Input
+                        placeholder="0"
+                        type="number"
+                        min="0"
+                        value={localFilters.instagramAvgLikesMin || ''}
+                        onChange={(e) => handleInputChange('instagramAvgLikesMin', e.target.value ? parseInt(e.target.value) : undefined)}
+                        className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-gray-600 mb-1">Max Likes</label>
+                      <Input
+                        placeholder="100K"
+                        type="number"
+                        min="0"
+                        value={localFilters.instagramAvgLikesMax || ''}
+                        onChange={(e) => handleInputChange('instagramAvgLikesMax', e.target.value ? parseInt(e.target.value) : undefined)}
+                        className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      />
+                    </div>
                   </div>
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-600 mb-1">Instagram Avg Comments</label>
-                  <div className="grid grid-cols-2 gap-2">
-                    <Input
-                      placeholder="Min"
-                      type="number"
-                      value={localFilters.instagramAvgCommentsMin || ''}
-                      onChange={(e) => handleInputChange('instagramAvgCommentsMin', e.target.value ? parseInt(e.target.value) : undefined)}
-                    />
-                    <Input
-                      placeholder="Max"
-                      type="number"
-                      value={localFilters.instagramAvgCommentsMax || ''}
-                      onChange={(e) => handleInputChange('instagramAvgCommentsMax', e.target.value ? parseInt(e.target.value) : undefined)}
-                    />
+                  <label className="block text-sm font-semibold text-gray-800 mb-2">Instagram Avg Comments</label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs text-gray-600 mb-1">Min Comments</label>
+                      <Input
+                        placeholder="0"
+                        type="number"
+                        min="0"
+                        value={localFilters.instagramAvgCommentsMin || ''}
+                        onChange={(e) => handleInputChange('instagramAvgCommentsMin', e.target.value ? parseInt(e.target.value) : undefined)}
+                        className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-gray-600 mb-1">Max Comments</label>
+                      <Input
+                        placeholder="10K"
+                        type="number"
+                        min="0"
+                        value={localFilters.instagramAvgCommentsMax || ''}
+                        onChange={(e) => handleInputChange('instagramAvgCommentsMax', e.target.value ? parseInt(e.target.value) : undefined)}
+                        className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      />
+                    </div>
                   </div>
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-600 mb-1">TikTok Avg Likes</label>
-                  <div className="grid grid-cols-2 gap-2">
-                    <Input
-                      placeholder="Min"
-                      type="number"
-                      value={localFilters.tiktokAvgLikesMin || ''}
-                      onChange={(e) => handleInputChange('tiktokAvgLikesMin', e.target.value ? parseInt(e.target.value) : undefined)}
-                    />
-                    <Input
-                      placeholder="Max"
-                      type="number"
-                      value={localFilters.tiktokAvgLikesMax || ''}
-                      onChange={(e) => handleInputChange('tiktokAvgLikesMax', e.target.value ? parseInt(e.target.value) : undefined)}
-                    />
+                  <label className="block text-sm font-semibold text-gray-800 mb-2">TikTok Avg Likes</label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs text-gray-600 mb-1">Min Likes</label>
+                      <Input
+                        placeholder="0"
+                        type="number"
+                        min="0"
+                        value={localFilters.tiktokAvgLikesMin || ''}
+                        onChange={(e) => handleInputChange('tiktokAvgLikesMin', e.target.value ? parseInt(e.target.value) : undefined)}
+                        className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-gray-600 mb-1">Max Likes</label>
+                      <Input
+                        placeholder="100K"
+                        type="number"
+                        min="0"
+                        value={localFilters.tiktokAvgLikesMax || ''}
+                        onChange={(e) => handleInputChange('tiktokAvgLikesMax', e.target.value ? parseInt(e.target.value) : undefined)}
+                        className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      />
+                    </div>
                   </div>
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-600 mb-1">TikTok Avg Comments</label>
-                  <div className="grid grid-cols-2 gap-2">
-                    <Input
-                      placeholder="Min"
-                      type="number"
-                      value={localFilters.tiktokAvgCommentsMin || ''}
-                      onChange={(e) => handleInputChange('tiktokAvgCommentsMin', e.target.value ? parseInt(e.target.value) : undefined)}
-                    />
-                    <Input
-                      placeholder="Max"
-                      type="number"
-                      value={localFilters.tiktokAvgCommentsMax || ''}
-                      onChange={(e) => handleInputChange('tiktokAvgCommentsMax', e.target.value ? parseInt(e.target.value) : undefined)}
-                    />
+                  <label className="block text-sm font-semibold text-gray-800 mb-2">TikTok Avg Comments</label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs text-gray-600 mb-1">Min Comments</label>
+                      <Input
+                        placeholder="0"
+                        type="number"
+                        min="0"
+                        value={localFilters.tiktokAvgCommentsMin || ''}
+                        onChange={(e) => handleInputChange('tiktokAvgCommentsMin', e.target.value ? parseInt(e.target.value) : undefined)}
+                        className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-gray-600 mb-1">Max Comments</label>
+                      <Input
+                        placeholder="10K"
+                        type="number"
+                        min="0"
+                        value={localFilters.tiktokAvgCommentsMax || ''}
+                        onChange={(e) => handleInputChange('tiktokAvgCommentsMax', e.target.value ? parseInt(e.target.value) : undefined)}
+                        className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>

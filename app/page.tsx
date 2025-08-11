@@ -21,11 +21,37 @@ export default function Home() {
   useEffect(() => {
     const fetchFilterOptions = async () => {
       try {
-        const response = await fetch('/api/filters')
+        const cachedData = sessionStorage.getItem('filterOptions')
+        const hasValidCache = cachedData && (() => {
+          try {
+            const parsed = JSON.parse(cachedData)
+            return parsed.categories && parsed.categories.length > 0
+          } catch {
+            return false
+          }
+        })()
+        
+        const response = await fetch('/api/filters', hasValidCache ? {} : {
+          headers: {
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
+          }
+        })
         const data = await response.json()
+      
+        sessionStorage.setItem('filterOptions', JSON.stringify(data))
         setFilterOptions(data)
+        
       } catch (error) {
         console.error('Error fetching filter options:', error)
+        
+        const cachedData = sessionStorage.getItem('filterOptions')
+        if (cachedData) {
+          const parsed = JSON.parse(cachedData)
+          if (parsed.categories && parsed.categories.length > 0) {
+            setFilterOptions(parsed)
+          }
+        }
       }
     }
 
@@ -54,11 +80,23 @@ export default function Home() {
         
         Object.entries(filters).forEach(([key, value]) => {
           if (value !== undefined && value !== null && value !== '') {
-            params.append(key, String(value))
+            if (Array.isArray(value)) {
+              params.append(key, value.join(','))
+            } else {
+              params.append(key, String(value))
+            }
           }
         })
 
-        const response = await fetch(`/api/athletes?${params.toString()}`)
+        const url = `/api/athletes?${params.toString()}`
+        const response = await fetch(url)
+        
+        if (!response.ok) {
+          console.error('API Error:', response.status, response.statusText)
+          const errorText = await response.text()
+          console.error('Error details:', errorText)
+        }
+        
         const data = await response.json()
         setAthletes(data)
       } catch (error) {
@@ -85,6 +123,26 @@ export default function Home() {
 
   const handleSortChange = (sortBy: string, sortOrder: 'asc' | 'desc') => {
     setFilters(prev => ({ ...prev, sortBy, sortOrder, page: 1 }))
+  }
+
+  const clearFilterCache = () => {
+    sessionStorage.removeItem('filterOptions')
+    const fetchFilterOptions = async () => {
+      try {
+        const response = await fetch('/api/filters', {
+          headers: {
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
+          }
+        })
+        const data = await response.json()
+        sessionStorage.setItem('filterOptions', JSON.stringify(data))
+        setFilterOptions(data)
+      } catch (error) {
+        console.error('Error fetching filter options:', error)
+      }
+    }
+    fetchFilterOptions()
   }
 
   return (

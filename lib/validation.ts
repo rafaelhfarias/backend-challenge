@@ -53,6 +53,58 @@ export const PlatformFiltersSchema = z.object({
   tiktokFollowersMax: z.coerce.number().int().min(0).max(10000000).optional()
 })
 
+// Advanced Features Schemas
+export const DateRangesSchema = z.object({
+  createdAfter: z.string().optional(),
+  createdBefore: z.string().optional(),
+  updatedAfter: z.string().optional(),
+  updatedBefore: z.string().optional()
+})
+
+export const ContentCategoriesSchema = z.object({
+  categoryIds: z.string().optional(), // Will be parsed as comma-separated string
+  categoryConfidenceMin: z.coerce.number().min(0).max(100).optional(),
+  categoryConfidenceMax: z.coerce.number().min(0).max(100).optional()
+})
+
+export const MultiPlatformSchema = z.object({
+  hasBothPlatforms: z.coerce.boolean().optional(),
+  platformType: z.string().optional()
+})
+
+export const ComplexDemographicsSchema = z.object({
+  audienceAge13_17Min: z.coerce.number().min(0).max(100).optional(),
+  audienceAge13_17Max: z.coerce.number().min(0).max(100).optional(),
+  audienceAge18_24Min: z.coerce.number().min(0).max(100).optional(),
+  audienceAge18_24Max: z.coerce.number().min(0).max(100).optional(),
+  audienceAge25_34Min: z.coerce.number().min(0).max(100).optional(),
+  audienceAge25_34Max: z.coerce.number().min(0).max(100).optional(),
+  audienceAge35_44Min: z.coerce.number().min(0).max(100).optional(),
+  audienceAge35_44Max: z.coerce.number().min(0).max(100).optional(),
+  audienceAge45PlusMin: z.coerce.number().min(0).max(100).optional(),
+  audienceAge45PlusMax: z.coerce.number().min(0).max(100).optional()
+})
+
+export const PostPerformanceSchema = z.object({
+  instagramAvgLikesMin: z.coerce.number().int().min(0).optional(),
+  instagramAvgLikesMax: z.coerce.number().int().min(0).optional(),
+  instagramAvgCommentsMin: z.coerce.number().int().min(0).optional(),
+  instagramAvgCommentsMax: z.coerce.number().int().min(0).optional(),
+  tiktokAvgLikesMin: z.coerce.number().int().min(0).optional(),
+  tiktokAvgLikesMax: z.coerce.number().int().min(0).optional(),
+  tiktokAvgCommentsMin: z.coerce.number().int().min(0).optional(),
+  tiktokAvgCommentsMax: z.coerce.number().int().min(0).optional()
+})
+
+export const LocationSchema = z.object({
+  locationUsMin: z.coerce.number().min(0).max(100).optional(),
+  locationUsMax: z.coerce.number().min(0).max(100).optional(),
+  locationMexicoMin: z.coerce.number().min(0).max(100).optional(),
+  locationMexicoMax: z.coerce.number().min(0).max(100).optional(),
+  locationCanadaMin: z.coerce.number().min(0).max(100).optional(),
+  locationCanadaMax: z.coerce.number().min(0).max(100).optional()
+})
+
 // Combined schema for all athlete filters
 export const AthleteFiltersValidationSchema = z.object({
   ...PaginationSchema.shape,
@@ -60,7 +112,13 @@ export const AthleteFiltersValidationSchema = z.object({
   ...CategoricalFiltersSchema.shape,
   ...PerformanceRangesSchema.shape,
   ...DemographicsSchema.shape,
-  ...PlatformFiltersSchema.shape
+  ...PlatformFiltersSchema.shape,
+  ...DateRangesSchema.shape,
+  ...ContentCategoriesSchema.shape,
+  ...MultiPlatformSchema.shape,
+  ...ComplexDemographicsSchema.shape,
+  ...PostPerformanceSchema.shape,
+  ...LocationSchema.shape
 }).refine((data) => {
   // Validate that min values are not greater than max values
   if (data.scoreMin !== undefined && data.scoreMax !== undefined && data.scoreMin > data.scoreMax) {
@@ -108,7 +166,14 @@ export function validateAndSanitizeQueryParams(searchParams: URLSearchParams) {
   }
 
   try {
-    return AthleteFiltersValidationSchema.parse(queryParams)
+    const validatedParams = AthleteFiltersValidationSchema.parse(queryParams)
+    
+    // Process categoryIds - convert string to array
+    if (validatedParams.categoryIds) {
+      validatedParams.categoryIds = validatedParams.categoryIds.split(',').map(id => parseInt(id))
+    }
+    
+    return validatedParams
   } catch (error) {
     if (error instanceof z.ZodError) {
       throw new Error(JSON.stringify(formatValidationError(error)))
