@@ -124,6 +124,117 @@ async function parseQueryParams(request: NextRequest) {
     queryParams.tiktokFollowersMax = parseInt(searchParams.get('tiktokFollowersMax')!)
   }
   
+  // Advanced Features - Date Ranges
+  if (searchParams.get('createdAfter')) {
+    queryParams.createdAfter = searchParams.get('createdAfter')
+  }
+  if (searchParams.get('createdBefore')) {
+    queryParams.createdBefore = searchParams.get('createdBefore')
+  }
+  if (searchParams.get('updatedAfter')) {
+    queryParams.updatedAfter = searchParams.get('updatedAfter')
+  }
+  if (searchParams.get('updatedBefore')) {
+    queryParams.updatedBefore = searchParams.get('updatedBefore')
+  }
+  
+  // Advanced Features - Content Categories
+  if (searchParams.get('categoryIds')) {
+    queryParams.categoryIds = searchParams.get('categoryIds')!.split(',').map(id => parseInt(id))
+  }
+  if (searchParams.get('categoryConfidenceMin')) {
+    queryParams.categoryConfidenceMin = parseFloat(searchParams.get('categoryConfidenceMin')!)
+  }
+  if (searchParams.get('categoryConfidenceMax')) {
+    queryParams.categoryConfidenceMax = parseFloat(searchParams.get('categoryConfidenceMax')!)
+  }
+  
+  // Advanced Features - Multi-Platform
+  if (searchParams.get('hasBothPlatforms')) {
+    queryParams.hasBothPlatforms = searchParams.get('hasBothPlatforms') === 'true'
+  }
+  if (searchParams.get('platformType')) {
+    queryParams.platformType = searchParams.get('platformType')
+  }
+  
+  // Advanced Features - Complex Demographics
+  if (searchParams.get('audienceAge13_17Min')) {
+    queryParams.audienceAge13_17Min = parseFloat(searchParams.get('audienceAge13_17Min')!)
+  }
+  if (searchParams.get('audienceAge13_17Max')) {
+    queryParams.audienceAge13_17Max = parseFloat(searchParams.get('audienceAge13_17Max')!)
+  }
+  if (searchParams.get('audienceAge18_24Min')) {
+    queryParams.audienceAge18_24Min = parseFloat(searchParams.get('audienceAge18_24Min')!)
+  }
+  if (searchParams.get('audienceAge18_24Max')) {
+    queryParams.audienceAge18_24Max = parseFloat(searchParams.get('audienceAge18_24Max')!)
+  }
+  if (searchParams.get('audienceAge25_34Min')) {
+    queryParams.audienceAge25_34Min = parseFloat(searchParams.get('audienceAge25_34Min')!)
+  }
+  if (searchParams.get('audienceAge25_34Max')) {
+    queryParams.audienceAge25_34Max = parseFloat(searchParams.get('audienceAge25_34Max')!)
+  }
+  if (searchParams.get('audienceAge35_44Min')) {
+    queryParams.audienceAge35_44Min = parseFloat(searchParams.get('audienceAge35_44Min')!)
+  }
+  if (searchParams.get('audienceAge35_44Max')) {
+    queryParams.audienceAge35_44Max = parseFloat(searchParams.get('audienceAge35_44Max')!)
+  }
+  if (searchParams.get('audienceAge45PlusMin')) {
+    queryParams.audienceAge45PlusMin = parseFloat(searchParams.get('audienceAge45PlusMin')!)
+  }
+  if (searchParams.get('audienceAge45PlusMax')) {
+    queryParams.audienceAge45PlusMax = parseFloat(searchParams.get('audienceAge45PlusMax')!)
+  }
+  
+  // Advanced Features - Post Performance
+  if (searchParams.get('instagramAvgLikesMin')) {
+    queryParams.instagramAvgLikesMin = parseInt(searchParams.get('instagramAvgLikesMin')!)
+  }
+  if (searchParams.get('instagramAvgLikesMax')) {
+    queryParams.instagramAvgLikesMax = parseInt(searchParams.get('instagramAvgLikesMax')!)
+  }
+  if (searchParams.get('instagramAvgCommentsMin')) {
+    queryParams.instagramAvgCommentsMin = parseInt(searchParams.get('instagramAvgCommentsMin')!)
+  }
+  if (searchParams.get('instagramAvgCommentsMax')) {
+    queryParams.instagramAvgCommentsMax = parseInt(searchParams.get('instagramAvgCommentsMax')!)
+  }
+  if (searchParams.get('tiktokAvgLikesMin')) {
+    queryParams.tiktokAvgLikesMin = parseInt(searchParams.get('tiktokAvgLikesMin')!)
+  }
+  if (searchParams.get('tiktokAvgLikesMax')) {
+    queryParams.tiktokAvgLikesMax = parseInt(searchParams.get('tiktokAvgLikesMax')!)
+  }
+  if (searchParams.get('tiktokAvgCommentsMin')) {
+    queryParams.tiktokAvgCommentsMin = parseInt(searchParams.get('tiktokAvgCommentsMin')!)
+  }
+  if (searchParams.get('tiktokAvgCommentsMax')) {
+    queryParams.tiktokAvgCommentsMax = parseInt(searchParams.get('tiktokAvgCommentsMax')!)
+  }
+  
+  // Advanced Features - Location
+  if (searchParams.get('locationUsMin')) {
+    queryParams.locationUsMin = parseFloat(searchParams.get('locationUsMin')!)
+  }
+  if (searchParams.get('locationUsMax')) {
+    queryParams.locationUsMax = parseFloat(searchParams.get('locationUsMax')!)
+  }
+  if (searchParams.get('locationMexicoMin')) {
+    queryParams.locationMexicoMin = parseFloat(searchParams.get('locationMexicoMin')!)
+  }
+  if (searchParams.get('locationMexicoMax')) {
+    queryParams.locationMexicoMax = parseFloat(searchParams.get('locationMexicoMax')!)
+  }
+  if (searchParams.get('locationCanadaMin')) {
+    queryParams.locationCanadaMin = parseFloat(searchParams.get('locationCanadaMin')!)
+  }
+  if (searchParams.get('locationCanadaMax')) {
+    queryParams.locationCanadaMax = parseFloat(searchParams.get('locationCanadaMax')!)
+  }
+  
   // Pagination
   if (searchParams.get('page')) {
     queryParams.page = parseInt(searchParams.get('page')!)

@@ -42,6 +42,51 @@ export const AthleteFiltersSchema = z.object({
   tiktokFollowersMin: z.number().optional(),
   tiktokFollowersMax: z.number().optional(),
   
+  // Advanced Features - Date Ranges
+  createdAfter: z.string().optional(),
+  createdBefore: z.string().optional(),
+  updatedAfter: z.string().optional(),
+  updatedBefore: z.string().optional(),
+  
+  // Advanced Features - Content Categories
+  categoryIds: z.array(z.number()).optional(),
+  categoryConfidenceMin: z.number().optional(),
+  categoryConfidenceMax: z.number().optional(),
+  
+  // Advanced Features - Multi-Platform
+  hasBothPlatforms: z.boolean().optional(),
+  platformType: z.enum(['instagram', 'tiktok', 'both']).optional(),
+  
+  // Advanced Features - Complex Demographics
+  audienceAge13_17Min: z.number().optional(),
+  audienceAge13_17Max: z.number().optional(),
+  audienceAge18_24Min: z.number().optional(),
+  audienceAge18_24Max: z.number().optional(),
+  audienceAge25_34Min: z.number().optional(),
+  audienceAge25_34Max: z.number().optional(),
+  audienceAge35_44Min: z.number().optional(),
+  audienceAge35_44Max: z.number().optional(),
+  audienceAge45PlusMin: z.number().optional(),
+  audienceAge45PlusMax: z.number().optional(),
+  
+  // Advanced Features - Post Performance
+  instagramAvgLikesMin: z.number().optional(),
+  instagramAvgLikesMax: z.number().optional(),
+  instagramAvgCommentsMin: z.number().optional(),
+  instagramAvgCommentsMax: z.number().optional(),
+  tiktokAvgLikesMin: z.number().optional(),
+  tiktokAvgLikesMax: z.number().optional(),
+  tiktokAvgCommentsMin: z.number().optional(),
+  tiktokAvgCommentsMax: z.number().optional(),
+  
+  // Advanced Features - Location
+  locationUsMin: z.number().optional(),
+  locationUsMax: z.number().optional(),
+  locationMexicoMin: z.number().optional(),
+  locationMexicoMax: z.number().optional(),
+  locationCanadaMin: z.number().optional(),
+  locationCanadaMax: z.number().optional(),
+  
   // Pagination
   page: z.number().min(1).default(1),
   pageSize: z.number().min(1).max(100).default(20),
@@ -90,12 +135,20 @@ export interface AthleteResponse {
     instagram?: {
       username: string
       followers: number
+      following: number
+      posts: number
       engagementRate: number
+      avgLikes: number
+      avgComments: number
     }
     tiktok?: {
       username: string
       followers: number
+      following: number
+      posts: number
       engagementRate: number
+      avgLikes: number
+      avgComments: number
     }
   }
   demographics: {
@@ -112,6 +165,21 @@ export interface AthleteResponse {
       male: number
       female: number
     }
+    audienceAge: {
+      age13_17: number
+      age18_24: number
+      age25_34: number
+      age35_44: number
+      age45Plus: number
+    }
+    location: {
+      us: number
+      mexico: number
+      canada: number
+      other: number
+    }
+    topCities: string
+    interests: string
   }
   categories: Array<{
     id: number
@@ -144,4 +212,5 @@ export interface FilterOptions {
   sports: Array<{ id: number; label: string }>
   conferences: string[]
   grades: string[]
+  categories: Array<{ id: number; name: string }>
 }

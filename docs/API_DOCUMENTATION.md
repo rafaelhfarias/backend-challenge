@@ -44,6 +44,69 @@ Main endpoint for athlete discovery with advanced filtering and pagination.
 | `instagramFollowersMax` | number | Maximum Instagram followers | `?instagramFollowersMax=50000` |
 | `tiktokFollowersMin` | number | Minimum TikTok followers | `?tiktokFollowersMin=2000` |
 | `tiktokFollowersMax` | number | Maximum TikTok followers | `?tiktokFollowersMax=20000` |
+
+#### Advanced Filtering Parameters
+
+##### Date Ranges
+| Parameter | Type | Description | Example |
+|-----------|------|-------------|---------|
+| `createdAfter` | string | Created after date (YYYY-MM-DD) | `?createdAfter=2024-01-01` |
+| `createdBefore` | string | Created before date (YYYY-MM-DD) | `?createdBefore=2024-12-31` |
+| `updatedAfter` | string | Updated after date (YYYY-MM-DD) | `?updatedAfter=2024-06-01` |
+| `updatedBefore` | string | Updated before date (YYYY-MM-DD) | `?updatedBefore=2024-12-31` |
+
+##### Content Categories
+| Parameter | Type | Description | Example |
+|-----------|------|-------------|---------|
+| `categoryIds` | number[] | Category IDs (comma-separated) | `?categoryIds=1,2,3` |
+| `categoryConfidenceMin` | number | Minimum category confidence % | `?categoryConfidenceMin=80` |
+| `categoryConfidenceMax` | number | Maximum category confidence % | `?categoryConfidenceMax=95` |
+
+##### Multi-Platform
+| Parameter | Type | Description | Example |
+|-----------|------|-------------|---------|
+| `hasBothPlatforms` | boolean | Athletes on both Instagram and TikTok | `?hasBothPlatforms=true` |
+| `platformType` | string | Platform type (instagram/tiktok/both) | `?platformType=both` |
+
+##### Complex Demographics - Audience Age
+| Parameter | Type | Description | Example |
+|-----------|------|-------------|---------|
+| `audienceAge13_17Min` | number | Minimum 13-17 age group % | `?audienceAge13_17Min=10` |
+| `audienceAge13_17Max` | number | Maximum 13-17 age group % | `?audienceAge13_17Max=30` |
+| `audienceAge18_24Min` | number | Minimum 18-24 age group % | `?audienceAge18_24Min=40` |
+| `audienceAge18_24Max` | number | Maximum 18-24 age group % | `?audienceAge18_24Max=60` |
+| `audienceAge25_34Min` | number | Minimum 25-34 age group % | `?audienceAge25_34Min=20` |
+| `audienceAge25_34Max` | number | Maximum 25-34 age group % | `?audienceAge25_34Max=40` |
+| `audienceAge35_44Min` | number | Minimum 35-44 age group % | `?audienceAge35_44Min=10` |
+| `audienceAge35_44Max` | number | Maximum 35-44 age group % | `?audienceAge35_44Max=25` |
+| `audienceAge45PlusMin` | number | Minimum 45+ age group % | `?audienceAge45PlusMin=5` |
+| `audienceAge45PlusMax` | number | Maximum 45+ age group % | `?audienceAge45PlusMax=15` |
+
+##### Post Performance Metrics
+| Parameter | Type | Description | Example |
+|-----------|------|-------------|---------|
+| `instagramAvgLikesMin` | number | Minimum Instagram avg likes | `?instagramAvgLikesMin=1000` |
+| `instagramAvgLikesMax` | number | Maximum Instagram avg likes | `?instagramAvgLikesMax=5000` |
+| `instagramAvgCommentsMin` | number | Minimum Instagram avg comments | `?instagramAvgCommentsMin=100` |
+| `instagramAvgCommentsMax` | number | Maximum Instagram avg comments | `?instagramAvgCommentsMax=500` |
+| `tiktokAvgLikesMin` | number | Minimum TikTok avg likes | `?tiktokAvgLikesMin=500` |
+| `tiktokAvgLikesMax` | number | Maximum TikTok avg likes | `?tiktokAvgLikesMax=2000` |
+| `tiktokAvgCommentsMin` | number | Minimum TikTok avg comments | `?tiktokAvgCommentsMin=50` |
+| `tiktokAvgCommentsMax` | number | Maximum TikTok avg comments | `?tiktokAvgCommentsMax=200` |
+
+##### Location Demographics
+| Parameter | Type | Description | Example |
+|-----------|------|-------------|---------|
+| `locationUsMin` | number | Minimum US audience % | `?locationUsMin=70` |
+| `locationUsMax` | number | Maximum US audience % | `?locationUsMax=90` |
+| `locationMexicoMin` | number | Minimum Mexico audience % | `?locationMexicoMin=5` |
+| `locationMexicoMax` | number | Maximum Mexico audience % | `?locationMexicoMax=15` |
+| `locationCanadaMin` | number | Minimum Canada audience % | `?locationCanadaMin=2` |
+| `locationCanadaMax` | number | Maximum Canada audience % | `?locationCanadaMax=8` |
+
+##### Pagination
+| Parameter | Type | Description | Example |
+|-----------|------|-------------|---------|
 | `page` | number | Current page (default: 1) | `?page=2` |
 | `pageSize` | number | Items per page (default: 20) | `?pageSize=10` |
 | `sortBy` | string | Sort field | `?sortBy=score` |
@@ -94,12 +157,20 @@ Main endpoint for athlete discovery with advanced filtering and pagination.
         "instagram": {
           "username": "samantham_baseball",
           "followers": 65044,
-          "engagementRate": 5.37
+          "following": 1200,
+          "posts": 245,
+          "engagementRate": 5.37,
+          "avgLikes": 3200,
+          "avgComments": 180
         },
         "tiktok": {
           "username": "samanthabaseball",
           "followers": 24058,
-          "engagementRate": 2.02
+          "following": 800,
+          "posts": 156,
+          "engagementRate": 2.02,
+          "avgLikes": 1500,
+          "avgComments": 95
         }
       },
       "demographics": {
@@ -115,7 +186,22 @@ Main endpoint for athlete discovery with advanced filtering and pagination.
         "audienceGender": {
           "male": 58.79,
           "female": 41.75
-        }
+        },
+        "audienceAge": {
+          "age13_17": 15.2,
+          "age18_24": 45.8,
+          "age25_34": 28.5,
+          "age35_44": 8.2,
+          "age45Plus": 2.3
+        },
+        "location": {
+          "us": 78.5,
+          "mexico": 12.3,
+          "canada": 4.8,
+          "other": 4.4
+        },
+        "topCities": "Los Angeles, New York, Miami, Chicago, Houston",
+        "interests": "Sports, Fitness, Lifestyle, Fashion, Travel"
       },
       "categories": [
         {
@@ -169,6 +255,20 @@ Returns available filter options for the user interface.
     "Junior",
     "Senior",
     "Graduate"
+  ],
+  "categories": [
+    {
+      "id": 1,
+      "name": "Sports"
+    },
+    {
+      "id": 2,
+      "name": "Lifestyle"
+    },
+    {
+      "id": 3,
+      "name": "Fashion"
+    }
   ]
 }
 ```
@@ -213,6 +313,41 @@ GET /api/athletes?isActive=true&engagementRateMin=8&sortBy=engagementRate&sortOr
 ### Example 5: Multi-Platform Athletes
 ```
 GET /api/athletes?instagramFollowersMin=5000&tiktokFollowersMin=2000
+```
+
+### Example 6: Advanced Date Range Filtering
+```
+GET /api/athletes?createdAfter=2024-01-01&updatedAfter=2024-06-01
+```
+
+### Example 7: Content Category Filtering
+```
+GET /api/athletes?categoryIds=1,2&categoryConfidenceMin=80
+```
+
+### Example 8: Complex Demographics - Young Audience
+```
+GET /api/athletes?audienceAge18_24Min=50&audienceAge25_34Min=25
+```
+
+### Example 9: Post Performance Metrics
+```
+GET /api/athletes?instagramAvgLikesMin=2000&tiktokAvgLikesMin=1000
+```
+
+### Example 10: Location-Based Filtering
+```
+GET /api/athletes?locationUsMin=80&locationMexicoMin=5
+```
+
+### Example 11: Multi-Platform Athletes with High Performance
+```
+GET /api/athletes?hasBothPlatforms=true&instagramAvgLikesMin=3000&tiktokAvgLikesMin=1500
+```
+
+### Example 12: Recent Athletes with Specific Demographics
+```
+GET /api/athletes?createdAfter=2024-01-01&audienceAge18_24Min=40&locationUsMin=70
 ```
 
 ## HTTP Status Codes

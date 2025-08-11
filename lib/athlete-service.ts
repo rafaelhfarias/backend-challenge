@@ -42,6 +42,45 @@ export class AthleteService {
       instagramFollowersMax,
       tiktokFollowersMin,
       tiktokFollowersMax,
+      // Advanced Features - Date Ranges
+      createdAfter,
+      createdBefore,
+      updatedAfter,
+      updatedBefore,
+      // Advanced Features - Content Categories
+      categoryIds,
+      categoryConfidenceMin,
+      categoryConfidenceMax,
+      // Advanced Features - Multi-Platform
+      hasBothPlatforms,
+      platformType,
+      // Advanced Features - Complex Demographics
+      audienceAge13_17Min,
+      audienceAge13_17Max,
+      audienceAge18_24Min,
+      audienceAge18_24Max,
+      audienceAge25_34Min,
+      audienceAge25_34Max,
+      audienceAge35_44Min,
+      audienceAge35_44Max,
+      audienceAge45PlusMin,
+      audienceAge45PlusMax,
+      // Advanced Features - Post Performance
+      instagramAvgLikesMin,
+      instagramAvgLikesMax,
+      instagramAvgCommentsMin,
+      instagramAvgCommentsMax,
+      tiktokAvgLikesMin,
+      tiktokAvgLikesMax,
+      tiktokAvgCommentsMin,
+      tiktokAvgCommentsMax,
+      // Advanced Features - Location
+      locationUsMin,
+      locationUsMax,
+      locationMexicoMin,
+      locationMexicoMax,
+      locationCanadaMin,
+      locationCanadaMax,
       page = 1,
       pageSize = 20,
       sortBy = 'score',
@@ -162,6 +201,167 @@ export class AthleteService {
       where.AND.push({ tiktokFollowers: filter })
     }
 
+    // Advanced Features - Date Ranges
+    if (createdAfter || createdBefore) {
+      const dateFilter: any = {}
+      if (createdAfter) dateFilter.gte = new Date(createdAfter)
+      if (createdBefore) dateFilter.lte = new Date(createdBefore)
+      where.AND.push({ createdAt: dateFilter })
+    }
+
+    if (updatedAfter || updatedBefore) {
+      const dateFilter: any = {}
+      if (updatedAfter) dateFilter.gte = new Date(updatedAfter)
+      if (updatedBefore) dateFilter.lte = new Date(updatedBefore)
+      where.AND.push({ updatedAt: dateFilter })
+    }
+
+    // Advanced Features - Content Categories
+    if (categoryIds && categoryIds.length > 0) {
+      where.AND.push({
+        categories: {
+          some: {
+            categoryId: { in: categoryIds }
+          }
+        }
+      })
+    }
+
+    if (categoryConfidenceMin !== undefined || categoryConfidenceMax !== undefined) {
+      const confidenceFilter: any = {}
+      if (categoryConfidenceMin !== undefined) confidenceFilter.gte = categoryConfidenceMin
+      if (categoryConfidenceMax !== undefined) confidenceFilter.lte = categoryConfidenceMax
+      where.AND.push({
+        categories: {
+          some: {
+            confidenceScore: confidenceFilter
+          }
+        }
+      })
+    }
+
+    // Advanced Features - Multi-Platform
+    if (hasBothPlatforms) {
+      where.AND.push({
+        AND: [
+          { instagramUsername: { not: null } },
+          { tiktokUsername: { not: null } }
+        ]
+      })
+    }
+
+    if (platformType) {
+      if (platformType === 'instagram') {
+        where.AND.push({
+          AND: [
+            { instagramUsername: { not: null } },
+            { tiktokUsername: null }
+          ]
+        })
+      } else if (platformType === 'tiktok') {
+        where.AND.push({
+          AND: [
+            { instagramUsername: null },
+            { tiktokUsername: { not: null } }
+          ]
+        })
+      } else if (platformType === 'both') {
+        where.AND.push({
+          AND: [
+            { instagramUsername: { not: null } },
+            { tiktokUsername: { not: null } }
+          ]
+        })
+      }
+    }
+
+    // Advanced Features - Complex Demographics
+    if (audienceAge13_17Min !== undefined || audienceAge13_17Max !== undefined) {
+      const filter: any = {}
+      if (audienceAge13_17Min !== undefined) filter.gte = audienceAge13_17Min
+      if (audienceAge13_17Max !== undefined) filter.lte = audienceAge13_17Max
+      where.AND.push({ audienceAge13_17: filter })
+    }
+
+    if (audienceAge18_24Min !== undefined || audienceAge18_24Max !== undefined) {
+      const filter: any = {}
+      if (audienceAge18_24Min !== undefined) filter.gte = audienceAge18_24Min
+      if (audienceAge18_24Max !== undefined) filter.lte = audienceAge18_24Max
+      where.AND.push({ audienceAge18_24: filter })
+    }
+
+    if (audienceAge25_34Min !== undefined || audienceAge25_34Max !== undefined) {
+      const filter: any = {}
+      if (audienceAge25_34Min !== undefined) filter.gte = audienceAge25_34Min
+      if (audienceAge25_34Max !== undefined) filter.lte = audienceAge25_34Max
+      where.AND.push({ audienceAge25_34: filter })
+    }
+
+    if (audienceAge35_44Min !== undefined || audienceAge35_44Max !== undefined) {
+      const filter: any = {}
+      if (audienceAge35_44Min !== undefined) filter.gte = audienceAge35_44Min
+      if (audienceAge35_44Max !== undefined) filter.lte = audienceAge35_44Max
+      where.AND.push({ audienceAge35_44: filter })
+    }
+
+    if (audienceAge45PlusMin !== undefined || audienceAge45PlusMax !== undefined) {
+      const filter: any = {}
+      if (audienceAge45PlusMin !== undefined) filter.gte = audienceAge45PlusMin
+      if (audienceAge45PlusMax !== undefined) filter.lte = audienceAge45PlusMax
+      where.AND.push({ audienceAge45Plus: filter })
+    }
+
+    // Advanced Features - Post Performance
+    if (instagramAvgLikesMin !== undefined || instagramAvgLikesMax !== undefined) {
+      const filter: any = {}
+      if (instagramAvgLikesMin !== undefined) filter.gte = instagramAvgLikesMin
+      if (instagramAvgLikesMax !== undefined) filter.lte = instagramAvgLikesMax
+      where.AND.push({ instagramAvgLikes: filter })
+    }
+
+    if (instagramAvgCommentsMin !== undefined || instagramAvgCommentsMax !== undefined) {
+      const filter: any = {}
+      if (instagramAvgCommentsMin !== undefined) filter.gte = instagramAvgCommentsMin
+      if (instagramAvgCommentsMax !== undefined) filter.lte = instagramAvgCommentsMax
+      where.AND.push({ instagramAvgComments: filter })
+    }
+
+    if (tiktokAvgLikesMin !== undefined || tiktokAvgLikesMax !== undefined) {
+      const filter: any = {}
+      if (tiktokAvgLikesMin !== undefined) filter.gte = tiktokAvgLikesMin
+      if (tiktokAvgLikesMax !== undefined) filter.lte = tiktokAvgLikesMax
+      where.AND.push({ tiktokAvgLikes: filter })
+    }
+
+    if (tiktokAvgCommentsMin !== undefined || tiktokAvgCommentsMax !== undefined) {
+      const filter: any = {}
+      if (tiktokAvgCommentsMin !== undefined) filter.gte = tiktokAvgCommentsMin
+      if (tiktokAvgCommentsMax !== undefined) filter.lte = tiktokAvgCommentsMax
+      where.AND.push({ tiktokAvgComments: filter })
+    }
+
+    // Advanced Features - Location
+    if (locationUsMin !== undefined || locationUsMax !== undefined) {
+      const filter: any = {}
+      if (locationUsMin !== undefined) filter.gte = locationUsMin
+      if (locationUsMax !== undefined) filter.lte = locationUsMax
+      where.AND.push({ locationUs: filter })
+    }
+
+    if (locationMexicoMin !== undefined || locationMexicoMax !== undefined) {
+      const filter: any = {}
+      if (locationMexicoMin !== undefined) filter.gte = locationMexicoMin
+      if (locationMexicoMax !== undefined) filter.lte = locationMexicoMax
+      where.AND.push({ locationMexico: filter })
+    }
+
+    if (locationCanadaMin !== undefined || locationCanadaMax !== undefined) {
+      const filter: any = {}
+      if (locationCanadaMin !== undefined) filter.gte = locationCanadaMin
+      if (locationCanadaMax !== undefined) filter.lte = locationCanadaMax
+      where.AND.push({ locationCanada: filter })
+    }
+
     if (where.AND.length === 0) {
       delete where.AND
     }
@@ -215,25 +415,33 @@ export class AthleteService {
           name: sport.name,
         })),
         currentScore: {
-          score: athlete.score,
-          totalFollowers: athlete.totalFollowers,
-          engagementRate: athlete.engagementRate,
-          audienceQualityScore: athlete.audienceQualityScore,
-          contentPerformanceScore: athlete.contentPerformanceScore,
+          score: athlete.score || 0,
+          totalFollowers: athlete.totalFollowers || 0,
+          engagementRate: athlete.engagementRate || 0,
+          audienceQualityScore: athlete.audienceQualityScore || 0,
+          contentPerformanceScore: athlete.contentPerformanceScore || 0,
         },
         platforms: {
           ...(athlete.instagramUsername && {
             instagram: {
               username: athlete.instagramUsername,
               followers: athlete.instagramFollowers || 0,
+              following: athlete.instagramFollowing || 0,
+              posts: athlete.instagramPosts || 0,
               engagementRate: athlete.instagramEngagementRate || 0,
+              avgLikes: athlete.instagramAvgLikes || 0,
+              avgComments: athlete.instagramAvgComments || 0,
             },
           }),
           ...(athlete.tiktokUsername && {
             tiktok: {
               username: athlete.tiktokUsername,
               followers: athlete.tiktokFollowers || 0,
+              following: athlete.tiktokFollowing || 0,
+              posts: athlete.tiktokPosts || 0,
               engagementRate: athlete.tiktokEngagementRate || 0,
+              avgLikes: athlete.tiktokAvgLikes || 0,
+              avgComments: athlete.tiktokAvgComments || 0,
             },
           }),
         },
@@ -251,6 +459,21 @@ export class AthleteService {
             male: athlete.audienceGenderMale,
             female: athlete.audienceGenderFemale,
           },
+          audienceAge: {
+            age13_17: athlete.audienceAge13_17 || 0,
+            age18_24: athlete.audienceAge18_24 || 0,
+            age25_34: athlete.audienceAge25_34 || 0,
+            age35_44: athlete.audienceAge35_44 || 0,
+            age45Plus: athlete.audienceAge45Plus || 0,
+          },
+          location: {
+            us: athlete.locationUs || 0,
+            mexico: athlete.locationMexico || 0,
+            canada: athlete.locationCanada || 0,
+            other: athlete.locationOther || 0,
+          },
+          topCities: athlete.topCities || '',
+          interests: athlete.interests || '',
         },
         categories: athlete.categories.map((ac) => ({
           id: ac.category.id,
@@ -313,7 +536,7 @@ export class AthleteService {
       return cachedResult
     }
 
-    const [schools, sports, conferences, grades] = await Promise.all([
+    const [schools, sports, conferences, grades, categories] = await Promise.all([
       prisma.school.findMany({
         select: { id: true, label: true, conference: true },
         orderBy: { label: 'asc' },
@@ -332,6 +555,10 @@ export class AthleteService {
         distinct: ['grade'],
         orderBy: { grade: 'asc' },
       }),
+      prisma.category.findMany({
+        select: { id: true, name: true },
+        orderBy: { name: 'asc' },
+      }),
     ])
 
     const result = {
@@ -339,6 +566,7 @@ export class AthleteService {
       sports,
       conferences: conferences.map((c) => c.conference),
       grades: grades.map((g) => g.grade),
+      categories,
     }
 
     await cacheService.set(cacheKey, result, 3600)

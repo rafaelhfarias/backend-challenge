@@ -48,6 +48,9 @@ const columns = [
             info.row.original.email
           )}
         </div>
+        <div className="text-xs text-gray-400">
+          {info.row.original.demographics.age || 'N/A'} years old • {info.row.original.demographics.ageRange || 'N/A'}
+        </div>
       </div>
     ),
   }),
@@ -66,6 +69,7 @@ const columns = [
           )}
         </div>
         <div className="text-sm text-gray-500">{info.getValue().conference}</div>
+        <div className="text-xs text-gray-400">{info.row.original.grade}</div>
       </div>
     ),
   }),
@@ -84,11 +88,36 @@ const columns = [
       </div>
     ),
   }),
+  columnHelper.accessor('categories', {
+    header: 'Categories',
+    cell: (info) => (
+      <div className="flex flex-wrap gap-1">
+        {info.getValue().slice(0, 3).map((category) => (
+          <span
+            key={category.id}
+            className="px-2 py-1 text-xs bg-green-100 text-green-800 rounded"
+            title={`Confidence: ${category.confidenceScore.toFixed(1)}%`}
+          >
+            {category.name}
+          </span>
+        ))}
+        {info.getValue().length > 3 && (
+          <span className="px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded">
+            +{info.getValue().length - 3}
+          </span>
+        )}
+      </div>
+    ),
+  }),
   columnHelper.accessor('currentScore.score', {
     header: 'Score',
     cell: (info) => (
       <div className="text-center">
         <div className="font-bold text-lg">{info.getValue().toFixed(1)}</div>
+        <div className="text-xs text-gray-500">
+          AQ: {(info.row.original.currentScore.audienceQualityScore || 0).toFixed(1)} | 
+          CP: {(info.row.original.currentScore.contentPerformanceScore || 0).toFixed(1)}
+        </div>
       </div>
     ),
   }),
@@ -113,13 +142,42 @@ const columns = [
       </div>
     ),
   }),
-  columnHelper.accessor('demographics.ethnicity.hispanic', {
-    header: 'Hispanic %',
-    cell: (info) => (
-      <div className="text-center">
-        <div className="font-medium">{info.getValue().toFixed(1)}%</div>
-      </div>
-    ),
+  columnHelper.accessor('demographics.audienceAge', {
+    header: 'Audience Age',
+    cell: (info) => {
+      const age = info.getValue()
+      
+      // Handle case where audienceAge data is not available
+      if (!age || typeof age !== 'object') {
+        return (
+          <div className="text-center">
+            <div className="text-xs text-gray-400">N/A</div>
+          </div>
+        )
+      }
+      
+      // Provide fallback values for missing data
+      const age18_24 = age.age18_24 || 0
+      const age25_34 = age.age25_34 || 0
+      const age35_44 = age.age35_44 || 0
+      const age45Plus = age.age45Plus || 0
+      
+      const maxAge = Math.max(age18_24, age25_34, age35_44, age45Plus)
+      let dominantAge = ''
+      if (age18_24 === maxAge) dominantAge = '18-24'
+      else if (age25_34 === maxAge) dominantAge = '25-34'
+      else if (age35_44 === maxAge) dominantAge = '35-44'
+      else dominantAge = '45+'
+      
+      return (
+        <div className="text-center">
+          <div className="font-medium text-sm">{dominantAge}</div>
+          <div className="text-xs text-gray-500">
+            {age18_24.toFixed(0)}% | {age25_34.toFixed(0)}% | {age35_44.toFixed(0)}%
+          </div>
+        </div>
+      )
+    },
   }),
   columnHelper.accessor('platforms', {
     header: 'Platforms',
@@ -133,6 +191,13 @@ const columns = [
                 ? `${(platforms.instagram.followers / 1000).toFixed(1)}K` 
                 : platforms.instagram.followers
               }
+              {platforms.instagram.avgLikes && platforms.instagram.avgLikes > 0 && (
+                <div className="text-xs text-gray-500">
+                  ~{platforms.instagram.avgLikes > 1000 
+                    ? `${(platforms.instagram.avgLikes / 1000).toFixed(1)}K` 
+                    : platforms.instagram.avgLikes} likes
+                </div>
+              )}
             </div>
           )}
           {platforms.tiktok && (
@@ -141,6 +206,13 @@ const columns = [
                 ? `${(platforms.tiktok.followers / 1000).toFixed(1)}K` 
                 : platforms.tiktok.followers
               }
+              {platforms.tiktok.avgLikes && platforms.tiktok.avgLikes > 0 && (
+                <div className="text-xs text-gray-500">
+                  ~{platforms.tiktok.avgLikes > 1000 
+                    ? `${(platforms.tiktok.avgLikes / 1000).toFixed(1)}K` 
+                    : platforms.tiktok.avgLikes} likes
+                </div>
+              )}
             </div>
           )}
         </div>
