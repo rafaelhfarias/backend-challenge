@@ -1,0 +1,118 @@
+import { z } from 'zod'
+
+// Enhanced validation schemas with better error messages and sanitization
+export const PaginationSchema = z.object({
+  page: z.coerce.number().int().min(1).max(1000).default(1),
+  pageSize: z.coerce.number().int().min(1).max(100).default(20),
+  sortBy: z.string().optional(),
+  sortOrder: z.enum(['asc', 'desc']).default('asc')
+})
+
+export const SearchSchema = z.object({
+  search: z.string().trim().min(1).max(100).optional()
+})
+
+export const CategoricalFiltersSchema = z.object({
+  gender: z.enum(['Male', 'Female']).optional(),
+  grade: z.coerce.number().int().min(1).max(12).optional(),
+  isAlumni: z.coerce.boolean().optional(),
+  isActive: z.coerce.boolean().optional(),
+  sport: z.coerce.number().int().positive().optional(),
+  school: z.coerce.number().int().positive().optional(),
+  conference: z.string().trim().max(50).optional()
+})
+
+export const PerformanceRangesSchema = z.object({
+  scoreMin: z.coerce.number().min(0).max(100).optional(),
+  scoreMax: z.coerce.number().min(0).max(100).optional(),
+  totalFollowersMin: z.coerce.number().int().min(0).max(10000000).optional(),
+  totalFollowersMax: z.coerce.number().int().min(0).max(10000000).optional(),
+  engagementRateMin: z.coerce.number().min(0).max(100).optional(),
+  engagementRateMax: z.coerce.number().min(0).max(100).optional()
+})
+
+export const DemographicsSchema = z.object({
+  ethnicityHispanicMin: z.coerce.number().min(0).max(100).optional(),
+  ethnicityHispanicMax: z.coerce.number().min(0).max(100).optional(),
+  ethnicityWhiteMin: z.coerce.number().min(0).max(100).optional(),
+  ethnicityWhiteMax: z.coerce.number().min(0).max(100).optional(),
+  ethnicityBlackMin: z.coerce.number().min(0).max(100).optional(),
+  ethnicityBlackMax: z.coerce.number().min(0).max(100).optional(),
+  ethnicityAsianMin: z.coerce.number().min(0).max(100).optional(),
+  ethnicityAsianMax: z.coerce.number().min(0).max(100).optional(),
+  audienceGenderMaleMin: z.coerce.number().min(0).max(100).optional(),
+  audienceGenderMaleMax: z.coerce.number().min(0).max(100).optional(),
+  audienceGenderFemaleMin: z.coerce.number().min(0).max(100).optional(),
+  audienceGenderFemaleMax: z.coerce.number().min(0).max(100).optional()
+})
+
+export const PlatformFiltersSchema = z.object({
+  instagramFollowersMin: z.coerce.number().int().min(0).max(10000000).optional(),
+  instagramFollowersMax: z.coerce.number().int().min(0).max(10000000).optional(),
+  tiktokFollowersMin: z.coerce.number().int().min(0).max(10000000).optional(),
+  tiktokFollowersMax: z.coerce.number().int().min(0).max(10000000).optional()
+})
+
+// Combined schema for all athlete filters
+export const AthleteFiltersValidationSchema = z.object({
+  ...PaginationSchema.shape,
+  ...SearchSchema.shape,
+  ...CategoricalFiltersSchema.shape,
+  ...PerformanceRangesSchema.shape,
+  ...DemographicsSchema.shape,
+  ...PlatformFiltersSchema.shape
+}).refine((data) => {
+  // Validate that min values are not greater than max values
+  if (data.scoreMin !== undefined && data.scoreMax !== undefined && data.scoreMin > data.scoreMax) {
+    return false
+  }
+  if (data.totalFollowersMin !== undefined && data.totalFollowersMax !== undefined && data.totalFollowersMin > data.totalFollowersMax) {
+    return false
+  }
+  if (data.engagementRateMin !== undefined && data.engagementRateMax !== undefined && data.engagementRateMin > data.engagementRateMax) {
+    return false
+  }
+  return true
+}, {
+  message: "Minimum values cannot be greater than maximum values",
+  path: ["rangeValidation"]
+})
+
+// Validation error formatter
+export function formatValidationError(error: z.ZodError): { message: string; details: Record<string, string[]> } {
+  const details: Record<string, string[]> = {}
+  
+  error.errors.forEach((err) => {
+    const field = err.path.join('.')
+    if (!details[field]) {
+      details[field] = []
+    }
+    details[field].push(err.message)
+  })
+
+  return {
+    message: 'Validation failed',
+    details
+  }
+}
+
+// Sanitize and validate query parameters
+export function validateAndSanitizeQueryParams(searchParams: URLSearchParams) {
+  const queryParams: Record<string, any> = {}
+  
+  // Extract all parameters
+  for (const [key, value] of searchParams.entries()) {
+    if (value !== null && value !== undefined && value !== '') {
+      queryParams[key] = value
+    }
+  }
+
+  try {
+    return AthleteFiltersValidationSchema.parse(queryParams)
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      throw new Error(JSON.stringify(formatValidationError(error)))
+    }
+    throw error
+  }
+}
