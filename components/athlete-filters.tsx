@@ -7,12 +7,12 @@ import { Button } from '@/components/ui/button'
 import { AthleteFilters as AthleteFiltersType, FilterOptions } from '@/lib/types'
 
 interface AthleteFiltersProps {
-  filters: AthleteFiltersType
+  filters?: Partial<AthleteFiltersType>
   filterOptions: FilterOptions | null
   onFiltersChange: (filters: Partial<AthleteFiltersType>) => void
 }
 
-export function AthleteFilters({ filters, filterOptions, onFiltersChange }: AthleteFiltersProps) {
+export function AthleteFilters({ filters = {}, filterOptions, onFiltersChange }: AthleteFiltersProps) {
   const [localFilters, setLocalFilters] = useState<Partial<AthleteFiltersType>>(filters)
 
   const handleInputChange = (key: keyof AthleteFiltersType, value: any) => {

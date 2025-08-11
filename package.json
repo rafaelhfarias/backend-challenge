@@ -7,6 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:ci": "jest --ci --coverage --watchAll=false",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
@@ -16,28 +20,35 @@
     "db:reset": "docker-compose down -v && npm run db:setup"
   },
   "dependencies": {
+    "@prisma/client": "^5.7.1",
+    "@tanstack/react-table": "^8.11.2",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.0.0",
+    "lucide-react": "^0.303.0",
     "next": "14.0.4",
     "react": "^18",
     "react-dom": "^18",
-    "@prisma/client": "^5.7.1",
-    "@tanstack/react-table": "^8.11.2",
-    "zod": "^3.22.4",
-    "class-variance-authority": "^0.7.0",
-    "clsx": "^2.0.0",
     "tailwind-merge": "^2.2.0",
-    "lucide-react": "^0.303.0"
+    "zod": "^3.22.4"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@testing-library/jest-dom": "^6.6.4",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/jest": "^30.0.0",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "autoprefixer": "^10.0.1",
     "eslint": "^8",
     "eslint-config-next": "14.0.4",
+    "jest": "^30.0.5",
+    "jest-environment-jsdom": "^30.0.5",
+    "postcss": "^8",
     "prisma": "^5.7.1",
-    "tsx": "^4.7.0",
     "tailwindcss": "^3.3.0",
-    "autoprefixer": "^10.0.1",
-    "postcss": "^8"
+    "ts-jest": "^29.4.1",
+    "tsx": "^4.7.0",
+    "typescript": "^5"
   }
 }
