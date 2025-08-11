@@ -22,6 +22,7 @@ This system provides a comprehensive athlete discovery platform with advanced fi
 - **API Performance**: Sub-200ms response times for complex queries
 - **Type Safety**: Full TypeScript implementation
 - **Validation**: Robust input validation with Zod
+- **Rate Limiting**: Configurable rate limiting with IP-based tracking
 - **Frontend**: Modern React interface with TanStack Table
 
 ## Technology Stack
@@ -100,29 +101,38 @@ docker-compose down -v           # Stop and remove data
 ### GET /api/athletes
 Main endpoint for athlete discovery with advanced filtering.
 
+**Rate Limiting:**
+- **General requests**: 100 requests per 15 minutes
+- **Search requests**: 30 requests per 5 minutes
+- **Headers**: `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset`
+
 **Query Parameters:**
-- `search`: Text search (name, email, school)
+- `search`: Text search (name, email, school) - max 100 characters
 - `gender`: Filter by gender (Male/Female)
-- `grade`: Filter by grade level
+- `grade`: Filter by grade level (1-12)
 - `isAlumni`: Alumni status (true/false)
 - `isActive`: Active status (true/false)
-- `sport`: Sport ID
-- `school`: School ID
-- `conference`: Conference name
-- `scoreMin/Max`: Score range
-- `totalFollowersMin/Max`: Followers range
-- `engagementRateMin/Max`: Engagement rate range
-- `ethnicityHispanicMin/Max`: Hispanic audience percentage
-- `page`: Current page (default: 1)
-- `pageSize`: Items per page (default: 20)
+- `sport`: Sport ID (positive integer)
+- `school`: School ID (positive integer)
+- `conference`: Conference name (max 50 characters)
+- `scoreMin/Max`: Score range (0-100)
+- `totalFollowersMin/Max`: Followers range (0-10,000,000)
+- `engagementRateMin/Max`: Engagement rate range (0-100)
+- `ethnicityHispanicMin/Max`: Hispanic audience percentage (0-100)
+- `page`: Current page (1-1000, default: 1)
+- `pageSize`: Items per page (1-100, default: 20)
 - `sortBy`: Sort field
-- `sortOrder`: Sort order (asc/desc)
+- `sortOrder`: Sort order (asc/desc, default: asc)
 
 ### GET /api/filters
 Returns available filter options for the UI.
 
+**Rate Limiting:** 100 requests per 15 minutes
+
 ### GET /api/stats
 Returns general athlete statistics.
+
+**Rate Limiting:** 100 requests per 15 minutes
 
 ## Example Queries
 
@@ -150,6 +160,12 @@ curl "http://localhost:3000/api/athletes?pageSize=5"
 
 # Test filters
 curl "http://localhost:3000/api/athletes?gender=Female&sport=1"
+
+# Test rate limiting headers
+curl -I "http://localhost:3000/api/athletes"
+
+# Test validation (should return 400)
+curl "http://localhost:3000/api/athletes?page=0"
 
 # Test statistics
 curl "http://localhost:3000/api/stats"
@@ -269,6 +285,8 @@ docker-compose down
 - Input validation with Zod
 - Robust error handling
 - Typed responses
+- Rate limiting with IP-based tracking
+- Request sanitization and parameter validation
 
 ### Frontend
 - Debounced text filters
@@ -294,7 +312,10 @@ docker-compose down
 │   ├── prisma.ts         # Prisma client
 │   ├── types.ts          # TypeScript types
 │   ├── utils.ts          # Utility functions
-│   └── athlete-service.ts # Business logic
+│   ├── athlete-service.ts # Business logic
+│   ├── rate-limiter.ts   # Rate limiting implementation
+│   ├── validation.ts     # Request validation schemas
+│   └── middleware.ts     # API middleware utilities
 ├── prisma/               # Database configuration
 │   ├── schema.prisma     # Database schema
 │   └── seed.ts           # Seed script
@@ -320,8 +341,49 @@ The system includes:
 - RESTful with query parameters
 - Robust validation with Zod
 - Consistent paginated responses
+- Rate limiting with configurable thresholds
+- IP-based client identification
 
 ### Frontend Architecture
 - Modular and reusable components
 - Local state management with React hooks
 - Responsive UI with Tailwind CSS
+
+## Rate Limiting and Validation
+
+### Rate Limiting Implementation
+The system implements a configurable rate limiting mechanism with the following features:
+
+- **In-memory storage**: Simple and fast for development and small-scale deployments
+- **IP-based tracking**: Identifies clients by IP address from headers
+- **Configurable limits**: Different limits for different endpoint types
+- **Sliding window**: Automatic cleanup of expired entries
+- **Response headers**: Standard rate limit headers for client awareness
+
+### Rate Limits
+- **General API endpoints**: 100 requests per 15 minutes
+- **Search endpoints**: 30 requests per 5 minutes (stricter due to higher computational cost)
+- **Headers included**: `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset`
+
+### Request Validation
+Comprehensive validation ensures data integrity and security:
+
+- **Parameter sanitization**: Automatic trimming and type coercion
+- **Range validation**: Ensures min values are not greater than max values
+- **Type safety**: Full TypeScript integration with Zod schemas
+- **Error formatting**: Detailed error messages for debugging
+- **Default values**: Sensible defaults for optional parameters
+
+### Validation Rules
+- **Search terms**: Maximum 100 characters, trimmed
+- **Numeric ranges**: Validated min/max relationships
+- **Enumerated values**: Strict validation for gender, sort order
+- **Pagination**: Reasonable limits (page: 1-1000, pageSize: 1-100)
+- **Performance metrics**: Realistic ranges for scores and follower counts
+- **Boolean values**: String values are coerced to booleans (any non-empty string = true)
+
+### Error Handling
+- **429 Too Many Requests**: Rate limit exceeded
+- **400 Bad Request**: Validation errors with detailed feedback
+- **500 Internal Server Error**: Unexpected server errors
+- **Consistent format**: All errors follow the same response structure
