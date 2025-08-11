@@ -98,13 +98,13 @@ model Athlete {
   locationMexico      Float
   locationCanada      Float
   locationOther       Float
-  topCities           String // JSON string
+  topCities           String
   audienceAge13_17    Float
   audienceAge18_24    Float
   audienceAge25_34    Float
   audienceAge35_44    Float
   audienceAge45Plus   Float
-  interests           String // JSON string
+  interests           String
   
   // Categories relationship (many-to-many)
   categories AthleteCategory[]

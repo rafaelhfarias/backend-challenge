@@ -166,7 +166,7 @@ export class AthleteService {
     else if (sortBy === 'totalFollowers') orderBy.totalFollowers = sortOrder
     else if (sortBy === 'engagementRate') orderBy.engagementRate = sortOrder
     else if (sortBy === 'age') orderBy.age = sortOrder
-    else orderBy.score = 'desc' // default
+    else orderBy.score = 'desc'
 
     // Get total count
     const total = await prisma.athlete.count({ where })

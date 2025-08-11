@@ -1,6 +1,5 @@
 import '@testing-library/jest-dom'
 
-// Mock Next.js router
 jest.mock('next/navigation', () => ({
   useRouter() {
     return {
@@ -20,7 +19,6 @@ jest.mock('next/navigation', () => ({
   },
 }))
 
-// Mock global Response
 global.Response = class Response {
   constructor(body, init = {}) {
     this.body = body
@@ -34,17 +32,14 @@ global.Response = class Response {
   }
 }
 
-// Mock NextResponse
 jest.mock('next/server', () => ({
   NextResponse: {
     json: (data, init = {}) => new global.Response(data, init),
   },
 }))
 
-// Mock fetch globally
 global.fetch = jest.fn()
 
-// Reset mocks before each test
 beforeEach(() => {
   jest.clearAllMocks()
 })

@@ -70,33 +70,6 @@ This system provides a comprehensive athlete discovery platform with advanced fi
    - **API**: http://localhost:3000/api/athletes
    - **PostgreSQL**: localhost:5432
 
-### Option 2: SQLite (Simpler Setup)
-
-1. **Install Dependencies**
-   ```bash
-   npm install
-   ```
-
-2. **Setup SQLite Database**
-   ```bash
-   # Edit prisma/schema.prisma and change to:
-   # provider = "sqlite"
-   # url = "file:./dev.db"
-   
-   # Generate Prisma client
-   npm run db:generate
-   
-   # Create database and apply schema
-   npm run db:push
-   
-   # Seed with sample data
-   npm run db:seed
-   ```
-
-3. **Start Application**
-   ```bash
-   npm run dev
-   ```
 
 ## Available Commands
 
@@ -120,8 +93,6 @@ docker-compose up -d postgres    # Start PostgreSQL
 docker-compose down              # Stop PostgreSQL
 docker-compose down -v           # Stop and remove data
 
-# Linting
-npm run lint         # Check code
 ```
 
 ## API Endpoints
@@ -354,19 +325,3 @@ The system includes:
 - Modular and reusable components
 - Local state management with React hooks
 - Responsive UI with Tailwind CSS
-
-## Next Steps
-
-### Suggested Improvements
-- [ ] Redis caching
-- [ ] Unit and integration tests
-- [ ] Authentication and authorization
-- [ ] Logging and monitoring
-- [ ] Production deployment
-- [ ] Advanced filters (dates, content)
-- [ ] Data export functionality
-- [ ] Analytics dashboard
-
-## License
-
-This project was developed as part of a technical challenge.
