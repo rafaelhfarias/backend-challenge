@@ -18,6 +18,24 @@ jest.mock('../../lib/prisma', () => ({
   },
 }))
 
+// Mock Cache
+jest.mock('../../lib/cache', () => ({
+  cacheService: {
+    get: jest.fn(),
+    set: jest.fn(),
+    delete: jest.fn(),
+    deletePattern: jest.fn(),
+    exists: jest.fn(),
+    generateKey: jest.fn(),
+  },
+  CACHE_KEYS: {
+    ATHLETES: 'athletes',
+    ATHLETE_STATS: 'athlete_stats',
+    FILTERS: 'filters',
+    SEARCH: 'search'
+  }
+}))
+
 const mockPrisma = prisma as jest.Mocked<typeof prisma>
 
 describe('AthleteService', () => {

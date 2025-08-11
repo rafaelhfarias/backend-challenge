@@ -17,6 +17,23 @@ jest.mock('@/lib/prisma', () => ({
   },
 }))
 
+jest.mock('@/lib/cache', () => ({
+  cacheService: {
+    get: jest.fn(),
+    set: jest.fn(),
+    delete: jest.fn(),
+    deletePattern: jest.fn(),
+    exists: jest.fn(),
+    generateKey: jest.fn(),
+  },
+  CACHE_KEYS: {
+    ATHLETES: 'athletes',
+    ATHLETE_STATS: 'athlete_stats',
+    FILTERS: 'filters',
+    SEARCH: 'search'
+  }
+}))
+
 describe('API Integration Tests', () => {
   beforeEach(() => {
     jest.clearAllMocks()

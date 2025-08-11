@@ -34,6 +34,7 @@ This system provides a comprehensive athlete discovery platform with advanced fi
 - **Frontend**: React 18, TanStack Table, Tailwind CSS
 - **Validation**: Zod
 - **Database**: PostgreSQL (Docker) or SQLite
+- **Cache**: Redis
 - **Language**: TypeScript
 
 ## Quick Start
@@ -49,9 +50,9 @@ This system provides a comprehensive athlete discovery platform with advanced fi
    npm install
    ```
 
-3. **Setup PostgreSQL Database**
+3. **Setup Database and Cache**
    ```bash
-   # Start PostgreSQL with Docker
+   # Start PostgreSQL and Redis with Docker
    npm run db:setup
    
    # Generate Prisma client
@@ -73,6 +74,7 @@ This system provides a comprehensive athlete discovery platform with advanced fi
    - **Frontend**: http://localhost:3000
    - **API**: http://localhost:3000/api/athletes
    - **PostgreSQL**: localhost:5432
+   - **Redis**: localhost:6379
 
 
 ## Available Commands
@@ -83,10 +85,10 @@ npm run dev          # Start development server
 npm run build        # Build for production
 npm run start        # Start production server
 
-# Database (PostgreSQL)
-npm run db:setup     # Start PostgreSQL with Docker
-npm run db:stop      # Stop PostgreSQL
-npm run db:reset     # Complete database reset
+# Database and Cache
+npm run db:setup     # Start PostgreSQL and Redis with Docker
+npm run db:stop      # Stop PostgreSQL and Redis
+npm run db:reset     # Complete database and cache reset
 npm run db:generate  # Generate Prisma client
 npm run db:push      # Apply schema
 npm run db:seed      # Seed data
@@ -94,8 +96,10 @@ npm run db:studio    # Open Prisma Studio
 
 # Docker
 docker-compose up -d postgres    # Start PostgreSQL
-docker-compose down              # Stop PostgreSQL
-docker-compose down -v           # Stop and remove data
+docker-compose up -d redis       # Start Redis
+docker-compose up -d             # Start all services
+docker-compose down              # Stop all services
+docker-compose down -v           # Stop and remove all data
 
 ```
 
@@ -136,6 +140,16 @@ Returns available filter options for the UI.
 Returns general athlete statistics.
 
 **Rate Limiting:** 100 requests per 15 minutes
+
+### POST /api/cache/invalidate
+Invalidates cache entries.
+
+**Query Parameters:**
+- `pattern` (optional): Specific cache pattern to invalidate
+
+**Examples:**
+- `POST /api/cache/invalidate` - Invalidate all cache
+- `POST /api/cache/invalidate?pattern=athletes:*` - Invalidate athlete cache only
 
 ## Example Queries
 
@@ -188,6 +202,9 @@ curl "http://localhost:3000/api/stats"
 
 # Test filter options
 curl "http://localhost:3000/api/filters"
+
+# Test cache invalidation
+curl -X POST "http://localhost:3000/api/cache/invalidate"
 ```
 
 ### Via Browser
@@ -204,6 +221,9 @@ The `env.example` file contains default configurations:
 ```bash
 # Database Configuration
 DATABASE_URL="postgresql://postgres:postgres@localhost:5432/athlete_discovery"
+
+# Redis Configuration
+REDIS_URL="redis://localhost:6379"
 
 # Environment
 NODE_ENV=development
@@ -223,6 +243,11 @@ cp env.example .env
 - **Database**: athlete_discovery
 - **Username**: postgres
 - **Password**: postgres
+
+### Redis Configuration
+- **Host**: localhost
+- **Port**: 6379
+- **URL**: redis://localhost:6379
 
 ## Troubleshooting
 
@@ -267,6 +292,15 @@ npm run db:setup
 docker-compose ps
 ```
 
+### Connection refused (Redis)
+```bash
+# Check if Redis is running
+docker-compose ps
+
+# Start Redis manually
+docker-compose up -d redis
+```
+
 ### Port 5432 already in use
 ```bash
 # Stop other PostgreSQL containers
@@ -305,6 +339,7 @@ docker-compose down
 - Request sanitization and parameter validation
 - Fuzzy search with Fuse.js integration
 - Search result highlighting
+- Redis caching for improved performance
 
 ### Frontend
 - Debounced text filters
@@ -334,6 +369,8 @@ docker-compose down
 │   ├── types.ts          # TypeScript types
 │   ├── utils.ts          # Utility functions
 │   ├── athlete-service.ts # Business logic
+│   ├── cache.ts          # Redis cache service
+│   ├── cache-middleware.ts # Cache middleware
 │   ├── rate-limiter.ts   # Rate limiting implementation
 │   ├── validation.ts     # Request validation schemas
 │   ├── middleware.ts     # API middleware utilities

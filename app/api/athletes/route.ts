@@ -1,16 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { AthleteService } from '@/lib/athlete-service'
 import { withMiddleware, hasSearchParams } from '@/lib/middleware'
+import { withCache, addCacheHeaders } from '@/lib/cache-middleware'
 
 async function handleAthletesRequest(request: NextRequest, validatedParams?: any) {
   try {
-    // Use validated parameters if available, otherwise parse manually
     const filters = validatedParams || await parseQueryParams(request)
-    
-    // Get athletes
     const result = await AthleteService.getAthletes(filters)
     
-    return NextResponse.json(result)
+    const response = NextResponse.json(result)
+    return addCacheHeaders(response, 1800)
   } catch (error) {
     console.error('Error fetching athletes:', error)
     return NextResponse.json(

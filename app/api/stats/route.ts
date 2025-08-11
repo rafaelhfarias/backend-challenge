@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { AthleteService } from '@/lib/athlete-service'
 import { withMiddleware } from '@/lib/middleware'
+import { addCacheHeaders } from '@/lib/cache-middleware'
 
 async function handleStatsRequest(request: NextRequest) {
   try {
     const stats = await AthleteService.getAthleteStats()
-    return NextResponse.json(stats)
+    const response = NextResponse.json(stats)
+    return addCacheHeaders(response, 1800)
   } catch (error) {
     console.error('Error fetching stats:', error)
     return NextResponse.json(

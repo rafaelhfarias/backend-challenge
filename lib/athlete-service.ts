@@ -1,9 +1,16 @@
 import { prisma } from './prisma'
 import { AthleteFilters, AthleteResponse, AthletesResponse, FilterOptions, HighlightedText } from './types'
 import { createFuseInstance, fuzzySearch, highlightTextWithMatches, calculateRelevanceScore } from './search-utils'
+import { cacheService, CACHE_KEYS } from './cache'
 
 export class AthleteService {
   static async getAthletes(filters: AthleteFilters): Promise<AthletesResponse> {
+    const cacheKey = cacheService.generateKey(CACHE_KEYS.ATHLETES, filters)
+    const cachedResult = await cacheService.get<AthletesResponse>(cacheKey)
+    
+    if (cachedResult) {
+      return cachedResult
+    }
     const {
       search,
       gender,
@@ -282,7 +289,7 @@ export class AthleteService {
 
     const totalPages = Math.ceil(total / pageSize)
 
-    return {
+    const result = {
       data,
       pagination: {
         page,
@@ -293,9 +300,19 @@ export class AthleteService {
         hasPrev: page > 1,
       },
     }
+
+    await cacheService.set(cacheKey, result, 1800)
+    return result
   }
 
   static async getFilterOptions(): Promise<FilterOptions> {
+    const cacheKey = CACHE_KEYS.FILTERS
+    const cachedResult = await cacheService.get<FilterOptions>(cacheKey)
+    
+    if (cachedResult) {
+      return cachedResult
+    }
+
     const [schools, sports, conferences, grades] = await Promise.all([
       prisma.school.findMany({
         select: { id: true, label: true, conference: true },
@@ -317,15 +334,25 @@ export class AthleteService {
       }),
     ])
 
-    return {
+    const result = {
       schools,
       sports,
       conferences: conferences.map((c) => c.conference),
       grades: grades.map((g) => g.grade),
     }
+
+    await cacheService.set(cacheKey, result, 3600)
+    return result
   }
 
   static async getAthleteStats() {
+    const cacheKey = CACHE_KEYS.ATHLETE_STATS
+    const cachedResult = await cacheService.get(cacheKey)
+    
+    if (cachedResult) {
+      return cachedResult
+    }
+
     const [
       totalAthletes,
       activeAthletes,
@@ -342,13 +369,26 @@ export class AthleteService {
       prisma.athlete.aggregate({ _avg: { engagementRate: true } }),
     ])
 
-    return {
+    const result = {
       totalAthletes,
       activeAthletes,
       alumniAthletes,
       avgScore: avgScore._avg.score || 0,
       avgFollowers: avgFollowers._avg.totalFollowers || 0,
       avgEngagement: avgEngagement._avg.engagementRate || 0,
+    }
+
+    await cacheService.set(cacheKey, result, 1800)
+    return result
+  }
+
+  static async invalidateCache(pattern?: string): Promise<void> {
+    if (pattern) {
+      await cacheService.deletePattern(pattern)
+    } else {
+      await cacheService.deletePattern(`${CACHE_KEYS.ATHLETES}:*`)
+      await cacheService.delete(CACHE_KEYS.FILTERS)
+      await cacheService.delete(CACHE_KEYS.ATHLETE_STATS)
     }
   }
 }

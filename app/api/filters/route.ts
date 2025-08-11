@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { AthleteService } from '@/lib/athlete-service'
 import { withMiddleware } from '@/lib/middleware'
+import { addCacheHeaders } from '@/lib/cache-middleware'
 
 async function handleFiltersRequest(request: NextRequest) {
   try {
     const filterOptions = await AthleteService.getFilterOptions()
-    return NextResponse.json(filterOptions)
+    const response = NextResponse.json(filterOptions)
+    return addCacheHeaders(response, 3600)
   } catch (error) {
     console.error('Error fetching filter options:', error)
     return NextResponse.json(

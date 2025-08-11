@@ -234,3 +234,30 @@ GET /api/athletes?instagramFollowersMin=5000&tiktokFollowersMin=2000
 - Database indexes for complex queries
 - Efficient pagination
 - Input validation with Zod
+- Redis caching for improved performance
+
+## Caching
+
+The API implements Redis caching to improve response times and reduce database load.
+
+### Cache Headers
+- `X-Cache: HIT` - Response served from cache
+- `X-Cache: MISS` - Response generated from database
+- `Cache-Control: public, max-age=<seconds>` - Cache duration
+
+### Cache TTL (Time To Live)
+- Athletes data: 30 minutes (1800 seconds)
+- Filter options: 1 hour (3600 seconds)
+- Statistics: 30 minutes (1800 seconds)
+
+### Cache Invalidation
+```
+POST /api/cache/invalidate
+```
+
+Query Parameters:
+- `pattern` (optional) - Specific cache pattern to invalidate
+
+Examples:
+- `POST /api/cache/invalidate` - Invalidate all cache
+- `POST /api/cache/invalidate?pattern=athletes:*` - Invalidate athlete cache only
