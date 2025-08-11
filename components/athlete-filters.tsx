@@ -51,41 +51,44 @@ export function AthleteFilters({ filters = {}, filterOptions, onFiltersChange }:
   }
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold">Filters</h2>
+    <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-xl font-semibold text-gray-900">Filters</h2>
         <Button
           variant="outline"
           size="sm"
           onClick={() => setShowAdvanced(!showAdvanced)}
+          className="bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100 hover:border-blue-300 font-medium"
         >
           {showAdvanced ? 'Hide Advanced' : 'Show Advanced'}
         </Button>
       </div>
       
-      <div className="space-y-4">
+      <div className="space-y-6">
         {/* Basic Filters */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-6">
           {/* Text Search */}
-          <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+          <div>
+            <label className="block text-sm font-semibold text-gray-800 mb-2">
               Search
             </label>
             <Input
               placeholder="Name, email, or school..."
               value={localFilters.search || ''}
               onChange={(e) => handleInputChange('search', e.target.value)}
+              className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
             />
           </div>
 
           {/* Gender */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-semibold text-gray-800 mb-2">
               Gender
             </label>
             <Select
               value={localFilters.gender || ''}
               onChange={(e) => handleInputChange('gender', e.target.value || undefined)}
+              className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
             >
               <option value="">All</option>
               <option value="Male">Male</option>
@@ -95,12 +98,13 @@ export function AthleteFilters({ filters = {}, filterOptions, onFiltersChange }:
 
           {/* Grade */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-semibold text-gray-800 mb-2">
               Grade
             </label>
             <Select
               value={localFilters.grade || ''}
               onChange={(e) => handleInputChange('grade', e.target.value || undefined)}
+              className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
             >
               <option value="">All</option>
               {filterOptions.grades.map((grade) => (
@@ -111,12 +115,13 @@ export function AthleteFilters({ filters = {}, filterOptions, onFiltersChange }:
 
           {/* School */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-semibold text-gray-800 mb-2">
               School
             </label>
             <Select
               value={localFilters.school || ''}
               onChange={(e) => handleInputChange('school', e.target.value ? parseInt(e.target.value) : undefined)}
+              className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
             >
               <option value="">All Schools</option>
               {filterOptions.schools.map((school) => (
@@ -129,12 +134,13 @@ export function AthleteFilters({ filters = {}, filterOptions, onFiltersChange }:
 
           {/* Conference */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-semibold text-gray-800 mb-2">
               Conference
             </label>
             <Select
               value={localFilters.conference || ''}
               onChange={(e) => handleInputChange('conference', e.target.value || undefined)}
+              className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
             >
               <option value="">All Conferences</option>
               {filterOptions.conferences.map((conference) => (
@@ -145,12 +151,13 @@ export function AthleteFilters({ filters = {}, filterOptions, onFiltersChange }:
 
           {/* Sport */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-semibold text-gray-800 mb-2">
               Sport
             </label>
             <Select
               value={localFilters.sport || ''}
               onChange={(e) => handleInputChange('sport', e.target.value ? parseInt(e.target.value) : undefined)}
+              className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
             >
               <option value="">All Sports</option>
               {filterOptions.sports.map((sport) => (
@@ -161,12 +168,13 @@ export function AthleteFilters({ filters = {}, filterOptions, onFiltersChange }:
 
           {/* Platform Type */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-semibold text-gray-800 mb-2">
               Platform Type
             </label>
             <Select
               value={localFilters.platformType || ''}
               onChange={(e) => handleInputChange('platformType', e.target.value || undefined)}
+              className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
             >
               <option value="">All Platforms</option>
               <option value="instagram">Instagram Only</option>
@@ -177,18 +185,18 @@ export function AthleteFilters({ filters = {}, filterOptions, onFiltersChange }:
         </div>
 
         {/* Status Filters */}
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700">Status</label>
-          <div className="flex items-center space-x-4">
+        <div className="space-y-3">
+          <label className="block text-sm font-semibold text-gray-800">Status</label>
+          <div className="flex flex-wrap items-center gap-4">
             <div className="flex items-center space-x-2">
               <input
                 type="checkbox"
                 id="isActive"
                 checked={localFilters.isActive ?? true}
                 onChange={(e) => handleInputChange('isActive', e.target.checked)}
-                className="rounded"
+                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
               />
-              <label htmlFor="isActive" className="text-sm">Active</label>
+              <label htmlFor="isActive" className="text-sm font-medium text-gray-700">Active</label>
             </div>
             <div className="flex items-center space-x-2">
               <input
@@ -196,9 +204,9 @@ export function AthleteFilters({ filters = {}, filterOptions, onFiltersChange }:
                 id="isAlumni"
                 checked={localFilters.isAlumni ?? false}
                 onChange={(e) => handleInputChange('isAlumni', e.target.checked)}
-                className="rounded"
+                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
               />
-              <label htmlFor="isAlumni" className="text-sm">Alumni</label>
+              <label htmlFor="isAlumni" className="text-sm font-medium text-gray-700">Alumni</label>
             </div>
             <div className="flex items-center space-x-2">
               <input
@@ -206,82 +214,118 @@ export function AthleteFilters({ filters = {}, filterOptions, onFiltersChange }:
                 id="hasBothPlatforms"
                 checked={localFilters.hasBothPlatforms ?? false}
                 onChange={(e) => handleInputChange('hasBothPlatforms', e.target.checked)}
-                className="rounded"
+                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
               />
-              <label htmlFor="hasBothPlatforms" className="text-sm">Both Platforms</label>
+              <label htmlFor="hasBothPlatforms" className="text-sm font-medium text-gray-700">Both Platforms</label>
             </div>
           </div>
         </div>
 
         {/* Performance Ranges */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-semibold text-gray-800 mb-2">
               Score Range
             </label>
-            <div className="grid grid-cols-2 gap-2">
-              <Input
-                placeholder="Min"
-                type="number"
-                value={localFilters.scoreMin || ''}
-                onChange={(e) => handleInputChange('scoreMin', e.target.value ? parseFloat(e.target.value) : undefined)}
-              />
-              <Input
-                placeholder="Max"
-                type="number"
-                value={localFilters.scoreMax || ''}
-                onChange={(e) => handleInputChange('scoreMax', e.target.value ? parseFloat(e.target.value) : undefined)}
-              />
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs text-gray-600 mb-1">Min Score</label>
+                <Input
+                  placeholder="0"
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  value={localFilters.scoreMin || ''}
+                  onChange={(e) => handleInputChange('scoreMin', e.target.value ? parseFloat(e.target.value) : undefined)}
+                  className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-gray-600 mb-1">Max Score</label>
+                <Input
+                  placeholder="100"
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  value={localFilters.scoreMax || ''}
+                  onChange={(e) => handleInputChange('scoreMax', e.target.value ? parseFloat(e.target.value) : undefined)}
+                  className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                />
+              </div>
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-semibold text-gray-800 mb-2">
               Followers Range
             </label>
-            <div className="grid grid-cols-2 gap-2">
-              <Input
-                placeholder="Min"
-                type="number"
-                value={localFilters.totalFollowersMin || ''}
-                onChange={(e) => handleInputChange('totalFollowersMin', e.target.value ? parseInt(e.target.value) : undefined)}
-              />
-              <Input
-                placeholder="Max"
-                type="number"
-                value={localFilters.totalFollowersMax || ''}
-                onChange={(e) => handleInputChange('totalFollowersMax', e.target.value ? parseInt(e.target.value) : undefined)}
-              />
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs text-gray-600 mb-1">Min Followers</label>
+                <Input
+                  placeholder="0"
+                  type="number"
+                  min="0"
+                  value={localFilters.totalFollowersMin || ''}
+                  onChange={(e) => handleInputChange('totalFollowersMin', e.target.value ? parseInt(e.target.value) : undefined)}
+                  className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-gray-600 mb-1">Max Followers</label>
+                <Input
+                  placeholder="1M"
+                  type="number"
+                  min="0"
+                  value={localFilters.totalFollowersMax || ''}
+                  onChange={(e) => handleInputChange('totalFollowersMax', e.target.value ? parseInt(e.target.value) : undefined)}
+                  className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                />
+              </div>
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-semibold text-gray-800 mb-2">
               Engagement Rate Range (%)
             </label>
-            <div className="grid grid-cols-2 gap-2">
-              <Input
-                placeholder="Min"
-                type="number"
-                step="0.1"
-                value={localFilters.engagementRateMin || ''}
-                onChange={(e) => handleInputChange('engagementRateMin', e.target.value ? parseFloat(e.target.value) : undefined)}
-              />
-              <Input
-                placeholder="Max"
-                type="number"
-                step="0.1"
-                value={localFilters.engagementRateMax || ''}
-                onChange={(e) => handleInputChange('engagementRateMax', e.target.value ? parseFloat(e.target.value) : undefined)}
-              />
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs text-gray-600 mb-1">Min Rate (%)</label>
+                <Input
+                  placeholder="0"
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  value={localFilters.engagementRateMin || ''}
+                  onChange={(e) => handleInputChange('engagementRateMin', e.target.value ? parseFloat(e.target.value) : undefined)}
+                  className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-gray-600 mb-1">Max Rate (%)</label>
+                <Input
+                  placeholder="20"
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  value={localFilters.engagementRateMax || ''}
+                  onChange={(e) => handleInputChange('engagementRateMax', e.target.value ? parseFloat(e.target.value) : undefined)}
+                  className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                />
+              </div>
             </div>
           </div>
         </div>
 
         {/* Advanced Filters */}
         {showAdvanced && (
-          <div className="space-y-6 border-t pt-6">
-            <h3 className="text-lg font-medium text-gray-900">Advanced Filters</h3>
+          <div className="space-y-8 border-t pt-8">
+            <h3 className="text-lg font-semibold text-gray-900">Advanced Filters</h3>
             
             {/* Date Ranges */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -610,11 +654,18 @@ export function AthleteFilters({ filters = {}, filterOptions, onFiltersChange }:
         )}
 
         {/* Action Buttons */}
-        <div className="flex space-x-2 pt-4">
-          <Button onClick={handleApplyFilters} className="flex-1">
+        <div className="flex space-x-3 pt-6">
+          <Button 
+            onClick={handleApplyFilters} 
+            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-md shadow-sm"
+          >
             Apply Filters
           </Button>
-          <Button variant="outline" onClick={handleClearFilters}>
+          <Button 
+            variant="outline" 
+            onClick={handleClearFilters}
+            className="border-gray-300 text-gray-700 hover:bg-gray-50 font-semibold py-3 px-6 rounded-md"
+          >
             Clear
           </Button>
         </div>

@@ -28,7 +28,7 @@ const columns = [
     header: 'Name',
     cell: (info) => (
       <div>
-        <div className="font-medium">
+        <div className="font-semibold text-gray-900">
           {info.row.original.highlightedName ? (
             <HighlightedTextComponent 
               parts={info.row.original.highlightedName} 
@@ -38,7 +38,7 @@ const columns = [
             info.getValue()
           )}
         </div>
-        <div className="text-sm text-gray-500">
+        <div className="text-sm text-gray-700">
           {info.row.original.highlightedEmail ? (
             <HighlightedTextComponent 
               parts={info.row.original.highlightedEmail} 
@@ -48,7 +48,7 @@ const columns = [
             info.row.original.email
           )}
         </div>
-        <div className="text-xs text-gray-400">
+        <div className="text-xs text-gray-600">
           {info.row.original.demographics.age || 'N/A'} years old • {info.row.original.demographics.ageRange || 'N/A'}
         </div>
       </div>
@@ -58,7 +58,7 @@ const columns = [
     header: 'School',
     cell: (info) => (
       <div>
-        <div className="font-medium">
+        <div className="font-semibold text-gray-900">
           {info.row.original.highlightedSchool ? (
             <HighlightedTextComponent 
               parts={info.row.original.highlightedSchool} 
@@ -68,8 +68,8 @@ const columns = [
             info.getValue().label
           )}
         </div>
-        <div className="text-sm text-gray-500">{info.getValue().conference}</div>
-        <div className="text-xs text-gray-400">{info.row.original.grade}</div>
+        <div className="text-sm text-gray-700">{info.getValue().conference}</div>
+        <div className="text-xs text-gray-600">{info.row.original.grade}</div>
       </div>
     ),
   }),
@@ -80,7 +80,7 @@ const columns = [
         {info.getValue().map((sport) => (
           <span
             key={sport.id}
-            className="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded"
+            className="px-2 py-1 text-xs bg-blue-100 text-blue-900 rounded-md font-medium"
           >
             {sport.label}
           </span>
@@ -95,14 +95,14 @@ const columns = [
         {info.getValue().slice(0, 3).map((category) => (
           <span
             key={category.id}
-            className="px-2 py-1 text-xs bg-green-100 text-green-800 rounded"
+            className="px-2 py-1 text-xs bg-green-100 text-green-900 rounded-md font-medium"
             title={`Confidence: ${category.confidenceScore.toFixed(1)}%`}
           >
             {category.name}
           </span>
         ))}
         {info.getValue().length > 3 && (
-          <span className="px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded">
+          <span className="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-md font-medium">
             +{info.getValue().length - 3}
           </span>
         )}
@@ -113,8 +113,8 @@ const columns = [
     header: 'Score',
     cell: (info) => (
       <div className="text-center">
-        <div className="font-bold text-lg">{info.getValue().toFixed(1)}</div>
-        <div className="text-xs text-gray-500">
+        <div className="font-bold text-lg text-gray-900">{info.getValue().toFixed(1)}</div>
+        <div className="text-xs text-gray-600">
           AQ: {(info.row.original.currentScore.audienceQualityScore || 0).toFixed(1)} | 
           CP: {(info.row.original.currentScore.contentPerformanceScore || 0).toFixed(1)}
         </div>
@@ -127,7 +127,7 @@ const columns = [
       const followers = info.getValue()
       return (
         <div className="text-center">
-          <div className="font-medium">
+          <div className="font-semibold text-gray-900">
             {followers > 1000 ? `${(followers / 1000).toFixed(1)}K` : followers}
           </div>
         </div>
@@ -138,7 +138,7 @@ const columns = [
     header: 'Engagement',
     cell: (info) => (
       <div className="text-center">
-        <div className="font-medium">{info.getValue().toFixed(2)}%</div>
+        <div className="font-semibold text-gray-900">{info.getValue().toFixed(2)}%</div>
       </div>
     ),
   }),
@@ -171,8 +171,8 @@ const columns = [
       
       return (
         <div className="text-center">
-          <div className="font-medium text-sm">{dominantAge}</div>
-          <div className="text-xs text-gray-500">
+          <div className="font-semibold text-sm text-gray-900">{dominantAge}</div>
+          <div className="text-xs text-gray-600">
             {age18_24.toFixed(0)}% | {age25_34.toFixed(0)}% | {age35_44.toFixed(0)}%
           </div>
         </div>
@@ -186,13 +186,13 @@ const columns = [
       return (
         <div className="space-y-1">
           {platforms.instagram && (
-            <div className="text-sm">
-              <span className="font-medium">IG:</span> {platforms.instagram.followers > 1000 
+            <div className="text-sm text-gray-900">
+              <span className="font-semibold">IG:</span> {platforms.instagram.followers > 1000 
                 ? `${(platforms.instagram.followers / 1000).toFixed(1)}K` 
                 : platforms.instagram.followers
               }
               {platforms.instagram.avgLikes && platforms.instagram.avgLikes > 0 && (
-                <div className="text-xs text-gray-500">
+                <div className="text-xs text-gray-600">
                   ~{platforms.instagram.avgLikes > 1000 
                     ? `${(platforms.instagram.avgLikes / 1000).toFixed(1)}K` 
                     : platforms.instagram.avgLikes} likes
@@ -201,13 +201,13 @@ const columns = [
             </div>
           )}
           {platforms.tiktok && (
-            <div className="text-sm">
-              <span className="font-medium">TT:</span> {platforms.tiktok.followers > 1000 
+            <div className="text-sm text-gray-900">
+              <span className="font-semibold">TT:</span> {platforms.tiktok.followers > 1000 
                 ? `${(platforms.tiktok.followers / 1000).toFixed(1)}K` 
                 : platforms.tiktok.followers
               }
               {platforms.tiktok.avgLikes && platforms.tiktok.avgLikes > 0 && (
-                <div className="text-xs text-gray-500">
+                <div className="text-xs text-gray-600">
                   ~{platforms.tiktok.avgLikes > 1000 
                     ? `${(platforms.tiktok.avgLikes / 1000).toFixed(1)}K` 
                     : platforms.tiktok.avgLikes} likes
@@ -243,10 +243,10 @@ export function AthleteTable({ athletes, loading, filters, onPageChange, onSortC
 
   if (loading) {
     return (
-      <div className="bg-white rounded-lg shadow">
-        <div className="p-8 text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-2 text-gray-600">Loading athletes...</p>
+      <div className="bg-white rounded-lg shadow border border-gray-200">
+        <div className="p-12 text-center">
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-700 font-medium">Loading athletes...</p>
         </div>
       </div>
     )
@@ -254,33 +254,33 @@ export function AthleteTable({ athletes, loading, filters, onPageChange, onSortC
 
   if (!athletes) {
     return (
-      <div className="bg-white rounded-lg shadow">
-        <div className="p-8 text-center">
-          <p className="text-gray-600">No data available</p>
+      <div className="bg-white rounded-lg shadow border border-gray-200">
+        <div className="p-12 text-center">
+          <p className="text-gray-700 font-medium">No data available</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="bg-white rounded-lg shadow">
+    <div className="bg-white rounded-lg shadow border border-gray-200">
       <div className="overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-gray-50">
+          <thead className="bg-gray-100 border-b border-gray-200">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
-                    className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                    className="px-6 py-4 text-left text-xs font-semibold text-gray-800 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors"
                     onClick={() => header.column.getCanSort() && handleSort(header.id)}
                   >
-                    <div className="flex items-center space-x-1">
+                    <div className="flex items-center space-x-2">
                       <span>{flexRender(header.column.columnDef.header, header.getContext())}</span>
                       {header.column.getCanSort() && (
                         <div className="flex flex-col">
-                          <ChevronUp className="h-3 w-3" />
-                          <ChevronDown className="h-3 w-3" />
+                          <ChevronUp className="h-3 w-3 text-gray-600" />
+                          <ChevronDown className="h-3 w-3 text-gray-600" />
                         </div>
                       )}
                     </div>
@@ -291,9 +291,9 @@ export function AthleteTable({ athletes, loading, filters, onPageChange, onSortC
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {table.getRowModel().rows.map((row) => (
-              <tr key={row.id} className="hover:bg-gray-50">
+              <tr key={row.id} className="hover:bg-gray-50 transition-colors">
                 {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id} className="px-4 py-4 whitespace-nowrap">
+                  <td key={cell.id} className="px-6 py-5 whitespace-nowrap">
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
                 ))}
@@ -305,26 +305,27 @@ export function AthleteTable({ athletes, loading, filters, onPageChange, onSortC
 
       {/* Pagination */}
       {athletes.pagination && (
-        <div className="px-4 py-3 border-t border-gray-200">
+        <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
           <div className="flex items-center justify-between">
-            <div className="text-sm text-gray-700">
+            <div className="text-sm font-medium text-gray-800">
               Showing {((athletes.pagination.page - 1) * athletes.pagination.pageSize) + 1} to{' '}
               {Math.min(athletes.pagination.page * athletes.pagination.pageSize, athletes.pagination.total)} of{' '}
               {athletes.pagination.total} results
             </div>
             
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-3">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => onPageChange(athletes.pagination.page - 1)}
                 disabled={!athletes.pagination.hasPrev}
+                className="border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50"
               >
                 <ChevronLeft className="h-4 w-4" />
                 Previous
               </Button>
               
-              <span className="text-sm text-gray-700">
+              <span className="text-sm font-medium text-gray-800">
                 Page {athletes.pagination.page} of {athletes.pagination.totalPages}
               </span>
               
@@ -333,6 +334,7 @@ export function AthleteTable({ athletes, loading, filters, onPageChange, onSortC
                 size="sm"
                 onClick={() => onPageChange(athletes.pagination.page + 1)}
                 disabled={!athletes.pagination.hasNext}
+                className="border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50"
               >
                 Next
                 <ChevronRight className="h-4 w-4" />
